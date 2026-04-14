@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import LandingPage from './components/Pages/LandingPage';
+import UnderConstructionPage from './components/Pages/UnderConstructionPage';
 
 
 
@@ -17,7 +18,7 @@ function App() {
         }/>
 
         <Route path="*" element={
-         <LandingPage/>
+         <UnderConstructionPage />
         }/>
       </Routes>
     </Router>  
