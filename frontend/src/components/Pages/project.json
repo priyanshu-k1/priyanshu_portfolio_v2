@@ -1,0 +1,157 @@
+{
+  "pageConfig":{
+      "devDescription":"I turn ideas into production-ready applications with a focus on performance, scalability, and usability. Every project is built to be functional, not just visually appealing.",
+      "modalOverLay":false,
+      "dynamicPic":false,
+      "devpic":["avatar.png","avatar-2.png"]
+  },
+  "projects": [
+    {
+        "name": "AutoScreen-AI",
+        "image": "res/autoscreen.webp",
+        "alt": "AI-powered resume screening system interface",
+        "description": "An AI-powered system that automatically screens resumes based on job requirements, enhancing recruitment efficiency and accuracy.",
+        "techStack": "Python, Flask, HTML, CSS, JavaScript, Machine Learning, NLP",
+        "logo":"network_intel_node",
+        "link": "https://github.com/priyanshu-k1/AutoScreen-AI",
+        "isUnderDevelopment": false,
+         "modalcontent":{
+          "icon":"fa-light fa-microchip-ai",
+          "content": "Automates resume screening using AI and NLP, reducing bias and time, and providing accurate job-candidate matching via skill-based ML models.",
+          "techStack": ["Python","Flask","scikit-learn","NLP","TF-IDF","HTML","CSS","JavaScript"]
+       }
+    },
+    {
+      "name": "Farm Connect",
+      "image": "res/farmConnect.webp",
+      "alt": "Farmers bending and greeting",
+      "description": "A platform to help farmers with crop information and purchases.",
+      "techStack": "HTML, CSS, JavaScript, Bootstrap",
+      "logo":"agriculture",
+      "link": "https://github.com/priyanshu-k1/FarmConnect",
+      "isUnderDevelopment": false,
+      "modalcontent": {
+        "content": "A multilingual crop education and e-commerce platform that empowers farmers with region-specific crop knowledge and allows them to purchase essential farming products in their preferred language.",
+        "techStack": ["HTML", "CSS", "JavaScript", "Bootstrap", "Node.js", "Express.js", "MySQL", "JWT", "REST API"]
+      }
+
+    },
+    {
+      "name": "Budget Buddy",
+      "image": "res/expense.webp",
+      "alt": "Expense tracking app interface",
+      "description": "A mobile application to track expenses with intuitive visualization.",
+      "techStack": "Flutter, Dart",
+      "logo":"savings",
+      "link": "https://github.com/priyanshu-k1/Budget-Buddy",
+      "isUnderDevelopment": false,
+      "modalcontent": {
+        "content": "A cross-platform expense tracker app that helps users monitor daily spending, categorize expenses, and maintain financial discipline through intuitive charts and summaries.",
+        "techStack": ["Dart", "Flutter"]
+      }
+    },
+    {
+      "name": "Breeze",
+      "image": "res/weather.webp",
+      "alt": "Weather app interface",
+      "description": "An Android application for getting weather updates with beautiful UI.",
+      "techStack": "Kotlin, Openweathermap Api",
+      "logo":"weather_hail",
+      "link": "https://github.com/priyanshu-k1/Breeze-android-app-",
+      "isUnderDevelopment": false,
+      "modalcontent": {
+        "content": "A clean and minimal weather app that delivers real-time weather updates, temperature, humidity, and forecasts using the OpenWeatherMap API with a Kotlin-based Android interface.",
+        "techStack": ["Kotlin", "Android", "OpenWeatherMap API", "XML", "Retrofit", "MVVM"]
+      }
+    },
+    {
+  "name": "Eclipse Chat",
+  "image": "res/Eclipse-chat.webp",
+  "alt": "Privacy-first real-time chat app UI",
+  "description": "A sleek, privacy-first real-time chat app with an eclipse-inspired UI, end-to-end encryption, ephemeral messages, and a fully responsive design.",
+  "techStack": "Node.js, Express, MongoDB Atlas,React, Socket.IO, , AES-256-GCM",
+  "logo":"record_voice_over",
+  "link":"https://github.com/priyanshu-k1/Eclipse-chat",
+  "isUnderDevelopment": false,
+  "progressTag":"Connecting Soon...",
+  "modalcontent": {
+    "content": "Eclipse Chat is a minimalist, privacy-focused messenger. Real-time delivery via Socket.IO, JWT-based auth,  Features include read-once messages, mutual-consent saving and zero tracking.",
+    "techStack": ["React","Node.js","Express","MongoDB Atlas","Socket.IO","AES-256-GCM"]
+  }
+}
+
+  ],
+  "minorProjects": [
+    {
+      "name": "PDC Library",
+      "link": "https://github.com/priyanshu-k1/PDC-Library-"
+    },
+    {
+      "name": "BMI Calculator",
+      "link": "https://github.com/priyanshu-k1/bmi_calculator2"
+    },
+    {
+      "name": "Breeze Website",
+      "link": "https://github.com/priyanshu-k1/Breeze-web_site"
+    },
+    {
+      "name": "Tik Tak",
+      "link": "https://github.com/priyanshu-k1/tictac_using-Tkinter"
+    },
+    {
+      "name": "Cook Book",
+      "link": "https://github.com/priyanshu-k1/Cook-Book-flutter"
+    }
+  ],
+ "skills": [
+  {
+    "name": "Python",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg"
+  },
+  {
+    "name": "Flutter",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg"
+  },
+  {
+    "name": "Kotlin",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kotlin/kotlin-original.svg"
+  },
+  {
+    "name": "JavaScript",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg"
+  },
+  {
+    "name": "Node.js",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg"
+  },
+  {
+    "name": "Express.js",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg"
+  },
+  {
+    "name": "Flask",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flask/flask-original.svg"
+  },
+  {
+    "name": "HTML",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg"
+  },
+  {
+    "name": "CSS",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg"
+  },
+  {
+    "name": "Bootstrap",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bootstrap/bootstrap-original.svg"
+  },
+  {
+    "name": "Git",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg"
+  },
+  {
+    "name": "MySQL",
+    "image": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg"
+  }
+]
+
+}

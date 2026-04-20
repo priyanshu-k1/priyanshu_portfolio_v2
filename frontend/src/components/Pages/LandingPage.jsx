@@ -4,11 +4,13 @@ import SkillsPage from './SkillsPage';
 import ProjectPage from './ProjectPage';
 import ContactPage from './ContactPage';
 import TestimonialPage from './TestimonialPage';
-import FloatingNavBar from "../ui/FloatingNavBar";
+import NavBar from "../ui/NavBar";
+import Footer from '../ui/Footer';
 
 const LandingPage = () => {
   return (
-     <div className="overflow'-x-hidden snap-y snap-mandatory h-screen overflow-y-auto scrollbar-thin">
+    <div className="overflow-x-hidden snap-y snap-mandatory h-screen overflow-y-auto scrollbar-thin">
+      <NavBar />
       <section id="home" className="snap-start snap-always min-h-screen">
         <HomePage />
       </section>
@@ -24,7 +26,7 @@ const LandingPage = () => {
       <section id="testimonials" className="snap-start snap-always min-h-screen">
         <TestimonialPage />
       </section>
-      <FloatingNavBar/>
+      <Footer/>
     </div>
   )
 }
