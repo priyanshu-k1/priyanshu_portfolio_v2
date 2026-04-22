@@ -4,56 +4,58 @@ import { motion, useInView } from 'motion/react'
 import {HeartCrack,FlameKindling} from 'lucide-react'
 
 
-const testimonials =[
-  {
-    name: "Sarah Chen",
-    role: "Engineering Lead",
-    company: "Vercel",
-    image: "https://i.pravatar.cc/150?img=47",
-    text: "Working with this developer was an absolute game-changer for our team. The attention to detail and depth of technical knowledge is truly rare. Every problem was solved with elegance and precision.",
-    tag: "Full Stack",
-  },
-  {
-    name: "Marcus Williams",
-    role: "CTO",
-    company: "Stripe",
-    image: "https://i.pravatar.cc/150?img=12",
-    text: "Delivered a complex distributed system on time and under budget. The code quality was exceptional — clean, well-documented, and a pleasure to maintain. Would hire again without hesitation.",
-    tag: "Architecture",
-  },
-  {
-    name: "Priya Mehta",
-    role: "Product Manager",
-    company: "Linear",
-    image: "https://i.pravatar.cc/150?img=32",
-    text: "Rare combination of technical brilliance and strong communication. Bridged the gap between engineering and product perfectly, turning ambiguous requirements into polished, intuitive features.",
-    tag: "Collaboration",
-  },
-  {
-    name: "James Okafor",
-    role: "Founder",
-    company: "Acme Labs",
-    image: "https://i.pravatar.cc/150?img=68",
-    text: "Took our MVP from idea to launch in record time. The UI was stunning, the performance was blazing fast, and the codebase was structured in a way that let us scale effortlessly afterward.",
-    tag: "Startup",
-  },
-  {
-    name: "Lena Hoffmann",
-    role: "Design Director",
-    company: "Figma",
-    image: "https://i.pravatar.cc/150?img=56",
-    text: "The pixel-perfect implementation of our designs was astonishing. Every micro-interaction, every transition — brought to life exactly as we envisioned, often even better.",
-    tag: "UI / UX",
-  },
-  {
-    name: "Rafael Torres",
-    role: "Senior Developer",
-    company: "GitHub",
-    image: "https://i.pravatar.cc/150?img=15",
-    text: "Exceptional problem solver. Handed off the most gnarly legacy codebase and it came back refactored, documented, and humming. This is the kind of engineer you want on your critical path.",
-    tag: "Refactor",
-  },
-]
+const testimonials =[]
+
+// [
+//   {
+//     name: "Sarah Chen",
+//     role: "Engineering Lead",
+//     company: "Vercel",
+//     image: "https://i.pravatar.cc/150?img=47",
+//     text: "Working with this developer was an absolute game-changer for our team. The attention to detail and depth of technical knowledge is truly rare. Every problem was solved with elegance and precision.",
+//     tag: "Full Stack",
+//   },
+//   {
+//     name: "Marcus Williams",
+//     role: "CTO",
+//     company: "Stripe",
+//     image: "https://i.pravatar.cc/150?img=12",
+//     text: "Delivered a complex distributed system on time and under budget. The code quality was exceptional — clean, well-documented, and a pleasure to maintain. Would hire again without hesitation.",
+//     tag: "Architecture",
+//   },
+//   {
+//     name: "Priya Mehta",
+//     role: "Product Manager",
+//     company: "Linear",
+//     image: "https://i.pravatar.cc/150?img=32",
+//     text: "Rare combination of technical brilliance and strong communication. Bridged the gap between engineering and product perfectly, turning ambiguous requirements into polished, intuitive features.",
+//     tag: "Collaboration",
+//   },
+//   {
+//     name: "James Okafor",
+//     role: "Founder",
+//     company: "Acme Labs",
+//     image: "https://i.pravatar.cc/150?img=68",
+//     text: "Took our MVP from idea to launch in record time. The UI was stunning, the performance was blazing fast, and the codebase was structured in a way that let us scale effortlessly afterward.",
+//     tag: "Startup",
+//   },
+//   {
+//     name: "Lena Hoffmann",
+//     role: "Design Director",
+//     company: "Figma",
+//     image: "https://i.pravatar.cc/150?img=56",
+//     text: "The pixel-perfect implementation of our designs was astonishing. Every micro-interaction, every transition — brought to life exactly as we envisioned, often even better.",
+//     tag: "UI / UX",
+//   },
+//   {
+//     name: "Rafael Torres",
+//     role: "Senior Developer",
+//     company: "GitHub",
+//     image: "https://i.pravatar.cc/150?img=15",
+//     text: "Exceptional problem solver. Handed off the most gnarly legacy codebase and it came back refactored, documented, and humming. This is the kind of engineer you want on your critical path.",
+//     tag: "Refactor",
+//   },
+// ]
 
 
 const QuoteIcon = () => (

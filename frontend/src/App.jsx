@@ -8,7 +8,7 @@ import UnderConstructionPage from './components/Pages/UnderConstructionPage';
 
 
 function App() {
-  const [isUnderConstruction,setUnderConstruction] = useState(true);
+  const [isUnderConstruction,setUnderConstruction] = useState(false);
   return (
     <Router>
       <Routes>
