@@ -15,20 +15,20 @@ const NAV_ITEMS = [
 ];
 
 const SOCIAL_LINKS = [
-  { icon: FaGithub, href: "https://github.com/your-username", label: "GitHub" },
+  { icon: FaGithub, href: "https://github.com/priyanshu-k1", label: "GitHub" },
   {
     icon: FaLinkedin,
-    href: "https://linkedin.com/in/your-username",
+    href: "https://www.linkedin.com/in/priyanshu-kumar-97898424a/",
     label: "LinkedIn",
   },
   {
     icon: FaXTwitter,
-    href: "https://twitter.com/your-username",
+    href: "https://x.com/KPriyanshu011",
     label: "Twitter",
   },
   {
     icon: FaInstagram,
-    href: "https://instagram.com/your-username",
+    href: "https://www.instagram.com/why.not.priyanshuuuu/",
     label: "Instagram",
   },
   {
@@ -333,30 +333,22 @@ const Footer = () => {
               </span>
             </button>
 
-            <button
-              className="group flex items-center gap-3 w-fit 
-              bg-transparent border-none p-0 cursor-pointer text-left"
-              onClick={() => {
-                if (!navigator.userAgent.match(/Mobi/)) {
-                  window.location.href = "tel:+919302771737";
-                }
-              }}
-            >
-              <div
-                className="w-9 h-9 rounded-full border border-violet-500/20
-               bg-violet-500/5 flex items-center justify-center
-               group-hover:bg-violet-500/15 group-hover:border-violet-500/40
-                transition-all duration-300"
+              <a
+                href="tel:+919302771737"
+                className="group flex items-center gap-3 w-fit bg-transparent border-none p-0 cursor-pointer text-left no-underline"
               >
-                <Phone
-                  size={15}
-                  className="text-purple-200/50 group-hover:text-violet-400 transition-colors duration-300"
-                />
-              </div>
-              <span className="font-mono text-[11px] text-purple-200/50 group-hover:text-violet-400 transition-colors duration-300 tracking-wide">
-                +91 9302771737
-              </span>
-            </button>
+                <div
+                  className="w-9 h-9 rounded-full border border-violet-500/20 bg-violet-500/5 flex items-center justify-center group-hover:bg-violet-500/15 group-hover:border-violet-500/40 transition-all duration-300"
+                >
+                  <Phone
+                    size={15}
+                    className="text-purple-200/50 group-hover:text-violet-400 transition-colors duration-300"
+                  />
+                </div>
+                <span className="font-mono text-[11px] text-purple-200/50 group-hover:text-violet-400 transition-colors duration-300 tracking-wide">
+                  +91 9302771737
+                </span>
+              </a>
 
             <div className="flex flex-col gap-3 mt-2">
               <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-violet-400/60">

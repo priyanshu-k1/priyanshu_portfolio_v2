@@ -324,7 +324,8 @@ const SkillsPage = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Changed grid-cols-1 → grid-cols-2 so mobile shows 2 cards per row */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {TECHS.map((tech, i) => (
           <TechCard key={tech.name} tech={tech} index={i} />
         ))}
