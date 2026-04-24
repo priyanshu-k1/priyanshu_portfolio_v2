@@ -64,6 +64,8 @@ const TECHS = [
   { name: "Flask",      colored: "devicon-flask-original",            mono: true  },
   { name: "HTML",       colored: "devicon-html5-plain colored",       mono: false },
   { name: "CSS",        colored: "devicon-css3-plain colored",        mono: false },
+  { name: "Dart",       colored: "devicon-dart-plain colored",        mono: false },
+  { name: "Android Studio",colored: "devicon-androidstudio-plain colored",    mono: false },
   { name: "Bootstrap",  colored: "devicon-bootstrap-plain colored",   mono: false },
   { name: "Git",        colored: "devicon-git-plain colored",         mono: false },
   { name: "MySQL",      colored: "devicon-mysql-plain colored",       mono: false },
@@ -71,6 +73,7 @@ const TECHS = [
   { name: "MongoDB",    colored: "devicon-mongodb-plain colored",     mono: false },
   { name: "Supabase",   colored: "devicon-supabase-plain colored",    mono: false },
   {name:"Github",colored:"devicon-github-original", mono: true}
+
 ]
 
 

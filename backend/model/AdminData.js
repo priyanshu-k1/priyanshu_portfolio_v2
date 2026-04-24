@@ -3,11 +3,6 @@ const bcrypt = require('bcryptjs');
 
 const AdminDataSchema = new mongoose.Schema(
   {
-    fullName: {
-      type: String,
-      required: [true, 'Full name is required'],
-      trim: true,
-    },
     username: {
       type: String,
       required: [true, 'Username is required'],
