@@ -260,7 +260,7 @@ const Footer = () => {
                 />
               </div>
               <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-purple-100">
-                Port<span className="text-violet-500">folio</span>
+                PRIY<span className="text-violet-500">ANSHU</span>
               </span>
             </div>
 

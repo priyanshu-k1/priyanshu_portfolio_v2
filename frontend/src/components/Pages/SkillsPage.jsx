@@ -275,7 +275,7 @@ const SkillsPage = () => {
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.55 }}
         >
-          Technologies I build with — from native Android to AI pipelines and modern web stacks.
+          Technologies I build with — from native Android to AI models and modern web stacks.
         </motion.p>
       </div>
 
