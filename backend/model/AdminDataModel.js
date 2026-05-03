@@ -3,11 +3,6 @@ const bcrypt = require('bcryptjs');
 
 const AdminDataSchema = new mongoose.Schema(
   {
-    fullName: {
-      type: String,
-      required: [true, 'Full name is required'],
-      trim: true,
-    },
     username: {
       type: String,
       required: [true, 'Username is required'],
@@ -43,19 +38,17 @@ const AdminDataSchema = new mongoose.Schema(
   }
 );
 
-AdminDataSchema.pre('save', async function (next) {
+AdminDataSchema.pre('save', async function () {
   if (this.isNew) {
     const existingAdmin = await mongoose.model('AdminData').findOne();
     if (existingAdmin) {
-      const err = new Error('An admin account already exists. Only one admin is allowed.');
-      return next(err);
+      throw new Error('An admin account already exists. Only one admin is allowed.');
     }
   }
 
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-  next();
 });
 
 AdminDataSchema.methods.comparePassword = async function (enteredPassword) {

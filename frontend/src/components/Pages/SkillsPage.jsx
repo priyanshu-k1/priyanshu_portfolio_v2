@@ -64,6 +64,8 @@ const TECHS = [
   { name: "Flask",      colored: "devicon-flask-original",            mono: true  },
   { name: "HTML",       colored: "devicon-html5-plain colored",       mono: false },
   { name: "CSS",        colored: "devicon-css3-plain colored",        mono: false },
+  { name: "Dart",       colored: "devicon-dart-plain colored",        mono: false },
+  { name: "Android Studio",colored: "devicon-androidstudio-plain colored",    mono: false },
   { name: "Bootstrap",  colored: "devicon-bootstrap-plain colored",   mono: false },
   { name: "Git",        colored: "devicon-git-plain colored",         mono: false },
   { name: "MySQL",      colored: "devicon-mysql-plain colored",       mono: false },
@@ -71,6 +73,7 @@ const TECHS = [
   { name: "MongoDB",    colored: "devicon-mongodb-plain colored",     mono: false },
   { name: "Supabase",   colored: "devicon-supabase-plain colored",    mono: false },
   {name:"Github",colored:"devicon-github-original", mono: true}
+
 ]
 
 
@@ -272,7 +275,7 @@ const SkillsPage = () => {
           animate={headerInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.55 }}
         >
-          Technologies I build with — from native Android to AI pipelines and modern web stacks.
+          Technologies I build with — from native Android to AI models and modern web stacks.
         </motion.p>
       </div>
 
@@ -323,13 +326,21 @@ const SkillsPage = () => {
           transition={{ delay: 0.4 }}
         />
       </div>
-
-      {/* Changed grid-cols-1 → grid-cols-2 so mobile shows 2 cards per row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {TECHS.length === 0 ?(
+        <div className="flex flex-col items-center justify-center -gap-5 py-20  ">
+          <div className=" border-4 rounded-full w-12 h-12 border-t-transparent
+           border-purple-400 animate-spin">
+          </div>
+          <p className="text-center text-purple-200/50 italic mt-10">
+            Tech stack is loading...
+          </p>
+        </div>
+      ):(
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {TECHS.map((tech, i) => (
           <TechCard key={tech.name} tech={tech} index={i} />
         ))}
-      </div>
+      </div>)}
     </section>
   )
 }

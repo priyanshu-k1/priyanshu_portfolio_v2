@@ -112,9 +112,9 @@ const handleDownload = () => {
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/20 overflow-hidden">
               <img src={navlogo} alt="Developer's logo" className="w-full h-full transition-all ease-in-out group-hover:scale-110" />
             </div>
-            <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 hidden sm:block">
+            {/* <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 hidden sm:block">
               Port<span className="text-violet-500">folio</span>
-            </span>
+            </span> */}
           </motion.div>
 
           <div className="hidden md:flex items-center gap-0 sm:gap-2 md:gap-4">
