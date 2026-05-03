@@ -326,13 +326,21 @@ const SkillsPage = () => {
           transition={{ delay: 0.4 }}
         />
       </div>
-
-      {/* Changed grid-cols-1 → grid-cols-2 so mobile shows 2 cards per row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      {TECHS.length === 0 ?(
+        <div className="flex flex-col items-center justify-center -gap-5 py-20  ">
+          <div className=" border-4 rounded-full w-12 h-12 border-t-transparent
+           border-purple-400 animate-spin">
+          </div>
+          <p className="text-center text-purple-200/50 italic mt-10">
+            Tech stack is loading...
+          </p>
+        </div>
+      ):(
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {TECHS.map((tech, i) => (
           <TechCard key={tech.name} tech={tech} index={i} />
         ))}
-      </div>
+      </div>)}
     </section>
   )
 }

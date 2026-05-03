@@ -27,6 +27,7 @@ const skillsSchema = new mongoose.Schema({
             type: String,
             required: [true, "Skill icon URL is required"],
             trim: true,
+            default: null,
         },
         is_monochrome:{
             type: Boolean,

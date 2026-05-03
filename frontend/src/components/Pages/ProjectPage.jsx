@@ -354,7 +354,8 @@ const ProjectPage = () => {
   const minorInView = useInView(minorRef, { once: true, margin: "-80px" })
   const [activeModal, setActiveModal] = useState(null)
 
-  const projects = projectData.projects.map((p, i) => ({
+  const projects = 
+  projectData.projects.map((p, i) => ({
     ...p,
     _bannerUrl: DUMMY_IMAGES[i % DUMMY_IMAGES.length],
   }))

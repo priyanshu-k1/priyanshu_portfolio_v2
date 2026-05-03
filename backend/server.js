@@ -9,6 +9,7 @@ const projectsRoute = require('./routes/projectsRoute');
 const contactRoute = require('./routes/contactRoute');
 const testimonialsRoute = require('./routes/testimonialsRoute');
 const adminRoute = require('./routes/adminRoute');
+const analyticsRoute = require('./routes/analyticsRoute');
 
 
 //Main configs
@@ -31,6 +32,7 @@ app.use('/api/fetchProjects',projectsRoute);
 app.use('/api/fetchContactDetails',contactRoute);
 app.use('/api/fetchTestimonials',testimonialsRoute);
 app.use('/api/admin',adminRoute);
+app.use('/api/analytics', analyticsRoute);
 
 
 
