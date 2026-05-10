@@ -10,7 +10,7 @@ const contactRoute = require('./routes/contactRoute');
 const testimonialsRoute = require('./routes/testimonialsRoute');
 const adminRoute = require('./routes/adminRoute');
 const analyticsRoute = require('./routes/analyticsRoute');
-
+const messageRoute = require('./routes/messageRoute');
 
 //Main configs
 const app = express();
@@ -33,6 +33,7 @@ app.use('/api/fetchContactDetails',contactRoute);
 app.use('/api/fetchTestimonials',testimonialsRoute);
 app.use('/api/admin',adminRoute);
 app.use('/api/analytics', analyticsRoute);
+app.use('/api/message',messageRoute)
 
 
 

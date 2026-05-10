@@ -252,7 +252,7 @@ const Footer = () => {
             transition={{ duration: 0.7, delay: 0.35 }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/20 overflow-hidden">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center  overflow-hidden">
                 <img
                   src={navlogo}
                   alt="Developer's logo"
@@ -260,7 +260,7 @@ const Footer = () => {
                 />
               </div>
               <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-purple-100">
-                PRIY<span className="text-violet-500">ANSHU</span>
+              
               </span>
             </div>
 

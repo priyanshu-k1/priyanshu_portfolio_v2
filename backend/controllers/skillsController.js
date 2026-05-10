@@ -38,10 +38,8 @@ const addSkills = async (req, res) => {
 const deleteSkill = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(id)
         const deleted = await Skills.findByIdAndDelete(id);
         if (!deleted) {
-            console.log("deleted",deleted)
             return res.status(404).json({ success: false, message: "Skill not found" });
         }
         res.status(200).json({ success: true, message: "Skill deleted successfully" });
@@ -61,7 +59,7 @@ const updateSkill = async (req, res) => {
         if (sub_skills !== undefined) updateFields.sub_skills = sub_skills;
         if (icon !== undefined) updateFields.skill_icon = icon;
 
-        const updated = await Skills.findByIdAndUpdate(id, updateFields, { new: true });
+        const updated = await Skills.findByIdAndUpdate(id, updateFields, { new: true,runValidators: true });
         if (!updated) {
             return res.status(404).json({ success: false, message: "Skill not found" });
         }

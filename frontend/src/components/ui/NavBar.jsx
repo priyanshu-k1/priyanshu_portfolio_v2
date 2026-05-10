@@ -67,7 +67,7 @@ const NavBar = () => {
           }
         }
       })
-
+      
       if (maxVisibleSection) setActiveSection(maxVisibleSection)
     }
 
@@ -103,18 +103,28 @@ const handleDownload = () => {
             : 'py-4 sm:py-6 bg-transparent border-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 bg-transparent">
 
           <motion.div
-            className="flex items-center gap-2 group cursor-pointer shrink-0"
-            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-2  cursor-pointer shrink-0 "
           >
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg border border-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/20 overflow-hidden">
-              <img src={navlogo} alt="Developer's logo" className="w-full h-full transition-all ease-in-out group-hover:scale-110" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center  overflow-hidden bg-transparent">
+              <img src={navlogo} alt="Developer's logo" className={`w-full h-full transition-all duration-900 ease-in-out ${activeSection !== "home"?"rotate-360":"rotate-0"}`}/>
             </div>
-            {/* <span className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 hidden sm:block">
-              Port<span className="text-violet-500">folio</span>
-            </span> */}
+            <AnimatePresence mode="wait">
+              {activeSection !== "home" && (
+                <motion.span
+                  key="brand-name"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 hidden sm:block"
+                >
+                  Priyanshu <span className="text-violet-500">codes.</span>
+                </motion.span>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <div className="hidden md:flex items-center gap-0 sm:gap-2 md:gap-4">
