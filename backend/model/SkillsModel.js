@@ -6,11 +6,10 @@ const skillsSchema = new mongoose.Schema({
         type: String,
         default: uuidv4,
     },
-    skills_name:{
+    skills_name: {
         type: String,
         required: [true, "Skills name is required"],
         trim: true,
-        required: true,
     },
     is_major_skill: {
         type: Boolean,
@@ -29,12 +28,11 @@ const skillsSchema = new mongoose.Schema({
             trim: true,
             default: null,
         },
-        is_monochrome:{
+        is_monochrome: {
             type: Boolean,
             default: false,
-        }
+        },
     },
-    
 });
 
 module.exports = mongoose.model("Skills", skillsSchema);

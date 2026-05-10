@@ -3,9 +3,7 @@ const UMAMI_BASE = process.env.UMAMI_API_URL || 'https://api.umami.is/v1';
 const UMAMI_KEY  = process.env.UMAMI_API_KEY;
 const WEBSITE_ID = process.env.UMAMI_WEBSITE_ID;
 
-console.log('UMAMI_BASE:', UMAMI_BASE);
-console.log('UMAMI_KEY:', UMAMI_KEY);
-console.log('WEBSITE_ID:', WEBSITE_ID);
+
 
 const umamiClient = axios.create({
   baseURL: UMAMI_BASE,
