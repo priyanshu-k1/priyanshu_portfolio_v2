@@ -5,6 +5,7 @@ import { Mail, ArrowUp, MapPin, Phone } from "lucide-react";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram,FaWhatsapp } from "react-icons/fa6";
 
 import navlogo from "../../assets/logo.png";
+import FooterTypedHeroText from "./FooterTypedHeroText";
 
 const NAV_ITEMS = [
   { name: "Home", href: "#home" },
@@ -252,16 +253,18 @@ const Footer = () => {
             transition={{ duration: 0.7, delay: 0.35 }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center  overflow-hidden">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center  overflow-hidden ">
                 <img
                   src={navlogo}
                   alt="Developer's logo"
-                  className="w-full h-full transition-all ease-in-out group-hover:scale-110"
+                  className="w-full h-full transition-all ease-in-out"
                 />
               </div>
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-purple-100">
+                <FooterTypedHeroText/>
+              {/* <div className="flex flex-col ">
+                <p>A developer all you need</p>
               
-              </span>
+              </div> */}
             </div>
 
             <p
@@ -408,7 +411,11 @@ const Footer = () => {
             onClick={scrollToTop}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-2 px-4 py-2 rounded-full border border-violet-500/20 bg-violet-500/5 font-mono text-[10px] text-purple-200/50 uppercase tracking-widest hover:text-violet-400 hover:bg-violet-500/10 hover:border-violet-500/40 transition-all duration-300"
+            className="group flex items-center gap-2 px-4 py-2 rounded-full border
+             border-violet-500/20 bg-violet-500/5 font-mono text-[10px]
+              text-purple-200/50 uppercase tracking-widest hover:text-violet-400
+               hover:bg-violet-500/10 hover:border-violet-500/40 transition-all duration-300
+               animate-bounce"
           >
             Back to top
             <ArrowUp

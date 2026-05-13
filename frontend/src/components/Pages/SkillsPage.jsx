@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion, useInView } from "motion/react"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 const CATEGORIES = [
   {
@@ -23,8 +23,8 @@ const CATEGORIES = [
     skills: [
       { name: "Python", level: 80 },
       { name: "TensorFlow", level: 65 },
-      {name: "PyTorch", level: 65 },
-      {name: "Scikit-learn", level: 65 },
+      { name: "PyTorch", level: 65 },
+      { name: "Scikit-learn", level: 65 },
     ],
   },
   {
@@ -35,7 +35,7 @@ const CATEGORIES = [
     glowColor: "rgba(99,102,241,0.12)",
     skills: [
       { name: "React", level: 75 },
-       { name: "Express.js", level: 70 },
+      { name: "Express.js", level: 70 },
       { name: "Node.js", level: 70 },
       { name: "Tailwind CSS", level: 85 },
       { name: "MongoDB", level: 65 },
@@ -55,32 +55,30 @@ const CATEGORIES = [
 ]
 
 const TECHS = [
-  { name: "Python",     colored: "devicon-python-plain colored",      mono: false },
-  { name: "Flutter",    colored: "devicon-flutter-plain colored",     mono: false },
-  { name: "Kotlin",     colored: "devicon-kotlin-plain colored",      mono: false },
-  { name: "JavaScript", colored: "devicon-javascript-plain colored",  mono: false },
-  { name: "Node.js",    colored: "devicon-nodejs-plain colored",      mono: false },
-  { name: "Express.js", colored: "devicon-express-original",          mono: false  },
-  { name: "Flask",      colored: "devicon-flask-original",            mono: true  },
-  { name: "HTML",       colored: "devicon-html5-plain colored",       mono: false },
-  { name: "CSS",        colored: "devicon-css3-plain colored",        mono: false },
-  { name: "Dart",       colored: "devicon-dart-plain colored",        mono: false },
-  { name: "Android Studio",colored: "devicon-androidstudio-plain colored",    mono: false },
-  { name: "Bootstrap",  colored: "devicon-bootstrap-plain colored",   mono: false },
-  { name: "Git",        colored: "devicon-git-plain colored",         mono: false },
-  { name: "MySQL",      colored: "devicon-mysql-plain colored",       mono: false },
-  { name: "React",      colored: "devicon-react-original colored",    mono: false },
-  { name: "MongoDB",    colored: "devicon-mongodb-plain colored",     mono: false },
-  { name: "Supabase",   colored: "devicon-supabase-plain colored",    mono: false },
-  {name:"Github",colored:"devicon-github-original", mono: true}
-
+  { _id: "p1",  skills_name: "Python",         skill_icon: { icon_url: "devicon-python-plain colored",         is_monochrome: false } },
+  { _id: "p2",  skills_name: "Flutter",        skill_icon: { icon_url: "devicon-flutter-plain colored",        is_monochrome: false } },
+  { _id: "p3",  skills_name: "Kotlin",         skill_icon: { icon_url: "devicon-kotlin-plain colored",         is_monochrome: false } },
+  { _id: "p4",  skills_name: "JavaScript",     skill_icon: { icon_url: "devicon-javascript-plain colored",     is_monochrome: false } },
+  { _id: "p5",  skills_name: "Node.js",        skill_icon: { icon_url: "devicon-nodejs-plain colored",         is_monochrome: false } },
+  { _id: "p6",  skills_name: "Express.js",     skill_icon: { icon_url: "devicon-express-original",             is_monochrome: true  } },
+  { _id: "p7",  skills_name: "Flask",          skill_icon: { icon_url: "devicon-flask-original",               is_monochrome: true  } },
+  { _id: "p8",  skills_name: "HTML",           skill_icon: { icon_url: "devicon-html5-plain colored",          is_monochrome: false } },
+  { _id: "p9",  skills_name: "CSS",            skill_icon: { icon_url: "devicon-css3-plain colored",           is_monochrome: false } },
+  { _id: "p10", skills_name: "Dart",           skill_icon: { icon_url: "devicon-dart-plain colored",           is_monochrome: false } },
+  { _id: "p11", skills_name: "Android Studio", skill_icon: { icon_url: "devicon-androidstudio-plain colored",  is_monochrome: false } },
+  { _id: "p12", skills_name: "Bootstrap",      skill_icon: { icon_url: "devicon-bootstrap-plain colored",      is_monochrome: false } },
+  { _id: "p13", skills_name: "Git",            skill_icon: { icon_url: "devicon-git-plain colored",            is_monochrome: false } },
+  { _id: "p14", skills_name: "MySQL",          skill_icon: { icon_url: "devicon-mysql-plain colored",          is_monochrome: false } },
+  { _id: "p15", skills_name: "React",          skill_icon: { icon_url: "devicon-react-original colored",       is_monochrome: false } },
+  { _id: "p16", skills_name: "MongoDB",        skill_icon: { icon_url: "devicon-mongodb-plain colored",        is_monochrome: false } },
+  { _id: "p17", skills_name: "Supabase",       skill_icon: { icon_url: "devicon-supabase-plain colored",       is_monochrome: false } },
+  { _id: "p18", skills_name: "Github",         skill_icon: { icon_url: "devicon-github-original",              is_monochrome: true  } },
 ]
-
 
 const CategoryCard = ({ cat, cardIndex }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "-80px" })
- 
+
   return (
     <motion.div
       ref={ref}
@@ -97,7 +95,7 @@ const CategoryCard = ({ cat, cardIndex }) => {
         transition: { duration: 0.2 },
       }}
     >
-       <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <span
           className="font-black uppercase tracking-tight"
           style={{ fontSize: "clamp(16px,1.4vw,22px)", fontFamily: "sans-serif" }}
@@ -110,12 +108,12 @@ const CategoryCard = ({ cat, cardIndex }) => {
           {cat.index}
         </span>
       </div>
- 
+
       <div
         className="w-full h-px"
         style={{ background: `linear-gradient(90deg, ${cat.borderColor} 0%, transparent 100%)` }}
       />
- 
+
       <div className="flex flex-wrap gap-1.5">
         {cat.skills.map(skill => (
           <span
@@ -131,7 +129,6 @@ const CategoryCard = ({ cat, cardIndex }) => {
           </span>
         ))}
       </div>
-     
     </motion.div>
   )
 }
@@ -159,16 +156,16 @@ const TechCard = ({ tech, index }) => {
       }}
     >
       <i
-        className={tech.colored}
+        className={tech.skill_icon?.icon_url || "ph ph-empty"}
         style={{
           fontSize: 36,
-          filter: tech.mono
+          filter: tech.skill_icon?.is_monochrome
             ? "brightness(0) invert(1) opacity(0.5)"
             : "saturate(0.75) brightness(1.05)",
         }}
       />
       <span className="font-mono text-[10px] tracking-wide uppercase text-purple-200/55">
-        {tech.name}
+        {tech.skills_name}
       </span>
     </motion.div>
   )
@@ -179,15 +176,37 @@ const SkillsPage = () => {
   const headerInView = useInView(headerRef, { once: true })
   const techHeaderRef = useRef(null)
   const techHeaderInView = useInView(techHeaderRef, { once: true, margin: "-80px" })
+  const [skillData, setSkillData] = useState(TECHS)
+  const [isFetching, setIsFetching] = useState(true)
+  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api`
 
   useEffect(() => {
-    if (document.querySelector('link[data-devicon]')) return
+    if (document.querySelector("link[data-devicon]")) return
     const link = document.createElement("link")
     link.rel = "stylesheet"
     link.href = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
     link.setAttribute("data-devicon", "true")
     document.head.appendChild(link)
   }, [])
+
+  useEffect(() => {
+    const fetchTech = async () => {
+      try {
+        const response = await fetch(`${API_URL}/fetchSkills/getSkills`)
+        if (response.ok) {
+          const json = await response.json()
+          if (json.data && json.data.length > 0) {
+            setSkillData(json.data)
+          }
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setIsFetching(false)
+      }
+    }
+    fetchTech()
+  }, [API_URL])
 
   return (
     <section
@@ -225,7 +244,7 @@ const SkillsPage = () => {
       />
 
       <div
-        className="absolute top-1/2 right-[4vw] -translate-y-1/2 select-none pointer-events-none font-black text-violet-400/8 leading-none "
+        className="absolute top-1/2 right-[4vw] -translate-y-1/2 select-none pointer-events-none font-black text-violet-400/8 leading-none"
         style={{ fontSize: "clamp(100px,16vw,200px)", fontFamily: "sans-serif" }}
       >
         Let's build!
@@ -325,22 +344,24 @@ const SkillsPage = () => {
           animate={techHeaderInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.4 }}
         />
+
+        {isFetching && (
+          <motion.p
+            className="font-mono text-[10px] tracking-[0.2em] uppercase text-violet-400/40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            Syncing live data...
+          </motion.p>
+        )}
       </div>
-      {TECHS.length === 0 ?(
-        <div className="flex flex-col items-center justify-center -gap-5 py-20  ">
-          <div className=" border-4 rounded-full w-12 h-12 border-t-transparent
-           border-purple-400 animate-spin">
-          </div>
-          <p className="text-center text-purple-200/50 italic mt-10">
-            Tech stack is loading...
-          </p>
-        </div>
-      ):(
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {TECHS.map((tech, i) => (
-          <TechCard key={tech.name} tech={tech} index={i} />
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {skillData.map((tech, i) => (
+          <TechCard tech={tech} index={i} key={tech._id || i} />
         ))}
-      </div>)}
+      </div>
     </section>
   )
 }
