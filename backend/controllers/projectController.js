@@ -26,6 +26,8 @@ const addProject = async (req, res)=>{
         
         if( !name ||  !decription ||  !img_url||  !is_featured|| 
             !is_major|| !tech_stack|| !project_link){
+            console.log(name , decription , img_url, is_major ,
+             is_featured ,tech_stack,project_link)
             res.status(500).json({
                 success:false,
                 message:"one or multiple required fields are empty.",

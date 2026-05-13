@@ -3,17 +3,16 @@ import { useState } from 'react';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/Pages/LandingPage';
-import UnderConstructionPage from './components/Pages/UnderConstructionPage';
+
 
 
 
 function App() {
-  const [isUnderConstruction,setUnderConstruction] = useState(false);
   return (
     <Router>
       <Routes>
         <Route path="*" element={
-          isUnderConstruction ? <UnderConstructionPage /> : <LandingPage />
+          <LandingPage />
         }/>
       </Routes>
     </Router>  
