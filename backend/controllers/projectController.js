@@ -19,46 +19,51 @@ const fetchProjects = async (req, res)=>{
     }
 };
 
-const addProject = async (req, res)=>{
-    try{
-        const { name , decription , img_url, is_major ,
-             is_featured ,tech_stack,project_link} = req.body;
-        
-        if( !name ||  !decription ||  !img_url||  !is_featured|| 
-            !is_major|| !tech_stack|| !project_link){
-            console.log(name , decription , img_url, is_major ,
-             is_featured ,tech_stack,project_link)
-            res.status(500).json({
-                success:false,
-                message:"one or multiple required fields are empty.",
-            })
+const addProject = async (req, res) => {
+    try {
+        const { 
+            name, description, img_url, is_major, 
+            is_featured, tech_stack, project_link 
+        } = req.body;
+        if (
+            !name || 
+            !description || 
+            !img_url || 
+            !tech_stack || 
+            !project_link || 
+            is_major === undefined || 
+            is_featured === undefined
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "One or multiple required fields are missing or empty."
+            });
         }
         const newProjectData = await project.create({
-            project_name: name ,
-            project_description: decription,
+            project_name: name,
+            project_description: description,
             project_url: project_link,
-            project_image_url: img_url ,
+            project_image_url: img_url,
             project_type: {
-                is_major_project: is_major ?? false,
-                is_featured_project: is_featured ??false
-            } ,
-            tech_stack : tech_stack ?? [],
-        })
-
-        res.status(201).json({
+                is_major_project: is_major,
+                is_featured_project: is_featured
+            },
+            tech_stack: tech_stack,
+        });
+        return res.status(201).json({
             success: true,
-            message:`${name} added successfully to project ${is_major?"major":"minor"} projects list.`,
+            message: `${name} added successfully to ${is_major ? "major" : "minor"} projects list.`,
             data: newProjectData
-        })
+        });
+    } catch (error) {
+        console.error("[addProject Error]:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-    catch(error){
-        res.status(500).json({
-            success:false,
-            message:error.message,
-        })
-    }
-    
 };
+
 
 const updateProject = async (req, res)=>{
     try{
