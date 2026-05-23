@@ -18,8 +18,7 @@ const authMiddleware = async (req, res, next) => {
     }
     req.admin = admin;
     next();
-  } 
-  catch (error) {
+  } catch (error) {
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ message: "Invalid token." });
     }

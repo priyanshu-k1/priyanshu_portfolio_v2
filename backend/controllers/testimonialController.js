@@ -2,7 +2,7 @@ const Testimonial = require("../model/TestimonialsModel");
 
 const getTestimonials = async (req, res) => {
   try {
-    const testimonials = await Testimonial.find({ status: "published" }).select("-__v");
+    const testimonials = await Testimonial.find().select("-__v");
     res.status(200).json({ success: true, data: testimonials });
   } catch (error) {
     res.status(500).json({ success: false, message: "Failed to fetch testimonials." });

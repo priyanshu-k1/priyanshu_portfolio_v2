@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { motion, useInView, AnimatePresence } from "motion/react"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import projectData from "./project.json"
-import {Zap} from "lucide-react"
+import { Zap } from "lucide-react"
 
 const DUMMY_IMAGES = [
   "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80",
@@ -11,6 +11,26 @@ const DUMMY_IMAGES = [
   "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
   "https://images.unsplash.com/photo-1639762681057-408e52192e55?w=800&q=80",
 ]
+
+const normalizeProject = (p, index) => ({
+  _id: p._id ?? p.project_name,
+  name: p.project_name ?? p.name,
+  description: p.project_description ?? p.description,
+  link: p.project_url ?? p.link,
+  imageUrl: p.project_image_url ?? p.imageUrl ?? "",
+  isMajor: p.project_type?.is_major_project ?? p.isMajor ?? false,
+  isFeatured: p.project_type?.is_featured_project ?? p.isFeatured ?? false,
+  techStack: Array.isArray(p.tech_stack)
+    ? p.tech_stack
+    : typeof p.techStack === "string"
+    ? p.techStack.split(",").map(t => t.trim())
+    : [],
+  isUnderDevelopment: p.isUnderDevelopment ?? false,
+  progressTag: p.progressTag ?? "In Dev",
+  modalcontent: p.modalcontent ?? null,
+  alt: p.project_name ?? p.name ?? "",
+  _bannerUrl: p.project_image_url || p._bannerUrl || DUMMY_IMAGES[index % DUMMY_IMAGES.length],
+})
 
 const TagPill = ({ label }) => (
   <span
@@ -26,7 +46,7 @@ const TagPill = ({ label }) => (
 )
 
 const ProjectModal = ({ project, onClose }) => {
-  const tech = project.modalcontent?.techStack ?? []
+  const tech = project.modalcontent?.techStack ?? project.techStack ?? []
   const content = project.modalcontent?.content ?? project.description
 
   return (
@@ -128,7 +148,7 @@ const ProjectModal = ({ project, onClose }) => {
 const FeaturedCard = ({ project, onOpen }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "-80px" })
-  const tags = project.techStack.split(",").map(t => t.trim()).slice(0, 5)
+  const tags = project.techStack.slice(0, 5)
 
   return (
     <motion.div
@@ -160,13 +180,13 @@ const FeaturedCard = ({ project, onOpen }) => {
           <div className="flex items-center gap-3 flex-wrap">
             <span
               className="font-mono text-[9px] tracking-[0.3em] uppercase px-3 
-              py-1.5 rounded-full flex flex-row items-center align-center gap-1  group 
+              py-1.5 rounded-full flex flex-row items-center align-center gap-1 group 
               hover:-translate-y-1.5 transition-all duration-300 ease-in-out"
-              style={{ border: "1px solid rgba(139,92,246,0.5) ", 
+              style={{ border: "1px solid rgba(139,92,246,0.5)", 
                 background: "rgba(139,92,246,0.15)", color: "rgba(192,168,255,0.9)" }}
             >
-              <Zap size={15} className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-30"/> 
-              <p  className="transition-all duration-300 ease-in-out group-hover:font-bold">Featured</p>
+              <Zap size={15} className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-30"/>
+              <p className="transition-all duration-300 ease-in-out group-hover:font-bold">Featured</p>
             </span>
             {project.isUnderDevelopment && (
               <span
@@ -193,11 +213,6 @@ const FeaturedCard = ({ project, onOpen }) => {
           <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-1.5">
               {tags.map(t => <TagPill key={t} label={t} />)}
-              {project.techStack.split(",").length > 5 && (
-                <span className="font-mono text-[9px] px-2 py-1 text-violet-500/40">
-                  +{project.techStack.split(",").length - 5} more
-                </span>
-              )}
             </div>
             <div className="flex items-center gap-6">
               <span className="font-mono text-[10px] tracking-wide text-violet-400/70 group-hover:text-violet-300 transition-colors duration-200">
@@ -237,7 +252,7 @@ const FeaturedCard = ({ project, onOpen }) => {
 const StandardCard = ({ project, index, onOpen }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "-60px" })
-  const tags = project.techStack.split(",").map(t => t.trim()).slice(0, 3)
+  const tags = project.techStack.slice(0, 3)
 
   return (
     <motion.div
@@ -285,9 +300,9 @@ const StandardCard = ({ project, index, onOpen }) => {
         </p>
         <div className="flex flex-wrap gap-1.5">
           {tags.map(t => <TagPill key={t} label={t} />)}
-          {project.techStack.split(",").length > 3 && (
+          {project.techStack.length > 3 && (
             <span className="font-mono text-[9px] px-1 py-1 text-violet-500/35">
-              +{project.techStack.split(",").length - 3}
+              +{project.techStack.length - 3}
             </span>
           )}
         </div>
@@ -353,16 +368,34 @@ const ProjectPage = () => {
   const minorRef = useRef(null)
   const minorInView = useInView(minorRef, { once: true, margin: "-80px" })
   const [activeModal, setActiveModal] = useState(null)
+  const [isLiveData, setIsLiveData] = useState(false)
+  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api`
 
-  const projects = 
-  projectData.projects.map((p, i) => ({
-    ...p,
-    _bannerUrl: DUMMY_IMAGES[i % DUMMY_IMAGES.length],
-  }))
+  const [projects, setProjects] = useState(
+    projectData.map((p, i) => normalizeProject(p, i))
+  )
 
-  const featured = projects[0]
-  const rest = projects.slice(1)
-  const { minorProjects } = projectData
+  useEffect(() => {
+    const fetchProjectData = async () => {
+      try {
+        const projectResponse = await fetch(`${API_URL}/fetchProjects/getprojects`)
+        if (projectResponse.ok) {
+          const json = await projectResponse.json()
+          if (json.success) {
+            setProjects(json.data.map((p, i) => normalizeProject(p, i)))
+            setIsLiveData(true)
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to fetch project data:\n${error}`)
+      }
+    }
+    fetchProjectData()
+  }, [])
+
+  const featuredProjects = projects.filter(p => p.isFeatured)
+  const majorProjects = projects.filter(p => p.isMajor && !p.isFeatured)
+  const minorProjects = projects.filter(p => !p.isMajor)
 
   return (
     <>
@@ -459,17 +492,21 @@ const ProjectPage = () => {
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.55 }}
           >
-            {projectData.pageConfig.devDescription}
+            I turn ideas into production-ready applications with a focus on performance, scalability, and usability. Every project is built to be functional, not just visually appealing.
           </motion.p>
         </div>
 
         <div className="flex flex-col gap-5 mb-24">
-          <FeaturedCard project={featured} onOpen={setActiveModal} />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {rest.map((project, i) => (
-              <StandardCard key={project.name} project={project} index={i} onOpen={setActiveModal} />
-            ))}
-          </div>
+          {featuredProjects.map(project => (
+            <FeaturedCard key={project._id} project={project} onOpen={setActiveModal} />
+          ))}
+          {majorProjects.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {majorProjects.map((project, i) => (
+                <StandardCard key={project._id} project={project} index={i} onOpen={setActiveModal} />
+              ))}
+            </div>
+          )}
         </div>
 
         <div ref={minorRef} className="flex flex-col gap-8">
@@ -509,7 +546,7 @@ const ProjectPage = () => {
 
           <div className="max-w-2xl">
             {minorProjects.map((p, i) => (
-              <MinorProjectRow key={p.name} project={p} index={i} />
+              <MinorProjectRow key={p._id} project={p} index={i} />
             ))}
           </div>
         </div>
