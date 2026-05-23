@@ -75,7 +75,7 @@
   {
     "project_name": "Eclipse Chat",
     "project_description": "Eclipse Chat is a minimalist, privacy-focused messenger. Real-time delivery via Socket.IO, JWT-based auth, Features include read-once messages, mutual-consent saving and zero tracking.",
-    "project_url": "https://priyanshu-k1.github.io/Portfolio_Priyanshu/res/Eclipse-chat.png",
+    "project_url": "https://github.com/priyanshu-k1/Eclipse-chat",
     "project_image_url": "https://1drv.ms/i/c/18fbfe02b57f65c9/IQQsu3OrTcHfTazNZmzP2SeOAYlrfHEZItJTHYcNa2M8Z00",
     "project_type": {
       "is_major_project": true,
