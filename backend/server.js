@@ -11,6 +11,7 @@ const testimonialsRoute = require('./routes/testimonialsRoute');
 const adminRoute = require('./routes/adminRoute');
 const analyticsRoute = require('./routes/analyticsRoute');
 const messageRoute = require('./routes/messageRoute');
+const imageUploadRoute = require('./routes/Imageuploadroutes');
 
 //Main configs
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/fetchTestimonials',testimonialsRoute);
 app.use('/api/admin',adminRoute);
 app.use('/api/analytics', analyticsRoute);
 app.use('/api/message',messageRoute)
+app.use('/api/image-upload', imageUploadRoute);
 
 
 

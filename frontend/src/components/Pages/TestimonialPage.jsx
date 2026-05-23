@@ -1,62 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { motion, useInView } from 'motion/react'
-import { HeartCrack, FlameKindling } from 'lucide-react'
-
-
-const testimonials = []
-
-// [
-//   {
-//     name: "Sarah Chen",
-//     role: "Engineering Lead",
-//     company: "Vercel",
-//     image: "https://i.pravatar.cc/150?img=47",
-//     text: "Working with this developer was an absolute game-changer for our team. The attention to detail and depth of technical knowledge is truly rare. Every problem was solved with elegance and precision.",
-//     tag: "Full Stack",
-//   },
-//   {
-//     name: "Marcus Williams",
-//     role: "CTO",
-//     company: "Stripe",
-//     image: "https://i.pravatar.cc/150?img=12",
-//     text: "Delivered a complex distributed system on time and under budget. The code quality was exceptional — clean, well-documented, and a pleasure to maintain. Would hire again without hesitation.",
-//     tag: "Architecture",
-//   },
-//   {
-//     name: "Priya Mehta",
-//     role: "Product Manager",
-//     company: "Linear",
-//     image: "https://i.pravatar.cc/150?img=32",
-//     text: "Rare combination of technical brilliance and strong communication. Bridged the gap between engineering and product perfectly, turning ambiguous requirements into polished, intuitive features.",
-//     tag: "Collaboration",
-//   },
-//   {
-//     name: "James Okafor",
-//     role: "Founder",
-//     company: "Acme Labs",
-//     image: "https://i.pravatar.cc/150?img=68",
-//     text: "Took our MVP from idea to launch in record time. The UI was stunning, the performance was blazing fast, and the codebase was structured in a way that let us scale effortlessly afterward.",
-//     tag: "Startup",
-//   },
-//   {
-//     name: "Lena Hoffmann",
-//     role: "Design Director",
-//     company: "Figma",
-//     image: "https://i.pravatar.cc/150?img=56",
-//     text: "The pixel-perfect implementation of our designs was astonishing. Every micro-interaction, every transition — brought to life exactly as we envisioned, often even better.",
-//     tag: "UI / UX",
-//   },
-//   {
-//     name: "Rafael Torres",
-//     role: "Senior Developer",
-//     company: "GitHub",
-//     image: "https://i.pravatar.cc/150?img=15",
-//     text: "Exceptional problem solver. Handed off the most gnarly legacy codebase and it came back refactored, documented, and humming. This is the kind of engineer you want on your critical path.",
-//     tag: "Refactor",
-//   },
-// ]
-
 
 const QuoteIcon = () => (
   <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,11 +8,14 @@ const QuoteIcon = () => (
   </svg>
 )
 
-const StarRow = () => (
+const StarRow = ({ count = 5 }) => (
   <div className="flex gap-1">
     {[...Array(5)].map((_, i) => (
       <svg key={i} width="11" height="11" viewBox="0 0 11 11" fill="none">
-        <path d="M5.5 0.5L6.84 3.88L10.5 4.27L7.91 6.67L8.66 10.5L5.5 8.65L2.34 10.5L3.09 6.67L0.5 4.27L4.16 3.88L5.5 0.5Z" fill="rgba(139,92,246,0.8)" />
+        <path
+          d="M5.5 0.5L6.84 3.88L10.5 4.27L7.91 6.67L8.66 10.5L5.5 8.65L2.34 10.5L3.09 6.67L0.5 4.27L4.16 3.88L5.5 0.5Z"
+          fill={i < count ? "rgba(139,92,246,0.8)" : "rgba(139,92,246,0.2)"}
+        />
       </svg>
     ))}
   </div>
@@ -106,7 +53,7 @@ const TestimonialCard = ({ testimonial, index }) => {
             color: 'rgba(192,168,255,0.75)',
           }}
         >
-          {testimonial.tag}
+          {testimonial.project_meta?.project_type}
         </span>
       </div>
 
@@ -114,10 +61,10 @@ const TestimonialCard = ({ testimonial, index }) => {
         className="font-light leading-relaxed text-purple-200/60 flex-1"
         style={{ fontSize: 'clamp(13px,1.4vw,14.5px)' }}
       >
-        "{testimonial.text}"
+        "{testimonial.description}"
       </p>
 
-      <StarRow />
+      <StarRow count={testimonial.project_meta?.feedback_stars ?? 5} />
 
       <div
         className="w-full h-px"
@@ -137,8 +84,8 @@ const TestimonialCard = ({ testimonial, index }) => {
             }}
           />
           <img
-            src={testimonial.image}
-            alt={testimonial.name}
+            src={testimonial.image_url}
+            alt={testimonial.project_meta?.client_name}
             className="relative w-10 h-10 rounded-full object-cover"
             style={{ border: '1px solid rgba(139,92,246,0.35)' }}
           />
@@ -149,13 +96,26 @@ const TestimonialCard = ({ testimonial, index }) => {
             className="font-black uppercase tracking-tight text-[#f0e8ff] leading-none"
             style={{ fontSize: 'clamp(12px,1.3vw,14px)', fontFamily: 'sans-serif' }}
           >
-            {testimonial.name}
+            {testimonial.project_meta?.client_name}
           </span>
           <span
             className="font-mono text-[10px] tracking-wide uppercase"
             style={{ color: 'rgba(192,168,255,0.55)' }}
           >
-            {testimonial.role} · {testimonial.company}
+            {testimonial.title}
+            {testimonial.project_meta?.project_link && (
+              <>
+                {' · '}
+                <a
+                  href={testimonial.project_meta.project_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'rgba(167,139,250,0.7)' }}
+                >
+                  View Project
+                </a>
+              </>
+            )}
           </span>
         </div>
       </div>
@@ -166,6 +126,38 @@ const TestimonialCard = ({ testimonial, index }) => {
 const TestimonialPage = () => {
   const headerRef = useRef(null)
   const headerInView = useInView(headerRef, { once: true })
+  const [testimonials, setTestimonials] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api`
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch(`${API_URL}/fetchTestimonials/`)
+
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status}`)
+        }
+
+        const json = await response.json()
+
+        if (json.success && Array.isArray(json.data)) {
+          const published = json.data.filter(t => t.status === 'published')
+          setTestimonials(published)
+        } else {
+          setTestimonials([])
+        }
+      } catch (err) {
+        console.error('Error fetching testimonials:', err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTestimonials()
+  }, [API_URL])
 
   return (
     <section
@@ -176,7 +168,7 @@ const TestimonialPage = () => {
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(140,60,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(140,60,255,0.04) 1px, transparent 1px)',
+            'linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
         }}
       />
@@ -278,7 +270,20 @@ const TestimonialPage = () => {
           gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
         }}
       >
-        {testimonials.length === 0 || testimonials === null ? (
+        {loading ? (
+          <motion.div
+            className="col-span-full flex items-center justify-center p-14"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <span
+              className="font-mono uppercase tracking-[0.25em]"
+              style={{ fontSize: 'clamp(9px,1.1vw,11px)', color: 'rgba(192,168,255,0.45)' }}
+            >
+              Loading testimonials...
+            </span>
+          </motion.div>
+        ) : error || testimonials.length === 0 ? (
           <motion.div
             className="relative w-full flex items-center justify-center flex-col gap-6 p-14 rounded-2xl overflow-hidden"
             style={{
@@ -296,48 +301,44 @@ const TestimonialPage = () => {
           >
             <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
               <style>{`
-                  @keyframes orbitA {
-                    from { transform: rotate(0deg) translateX(38px) rotate(0deg); }
-                    to   { transform: rotate(360deg) translateX(38px) rotate(-360deg); }
-                  }
-                  @keyframes orbitB {
-                    from { transform: rotate(180deg) translateX(24px) rotate(-180deg); }
-                    to   { transform: rotate(540deg) translateX(24px) rotate(-540deg); }
-                  }
-                  @keyframes pulse {
-                    0%, 100% { opacity: 0.35; r: 5; }
-                    50%       { opacity: 0.9;  r: 6.5; }
-                  }
-                  @keyframes shimmer {
-                    0%   { stroke-dashoffset: 283; }
-                    100% { stroke-dashoffset: 0; }
-                  }
-                  @keyframes blink {
-                    0%, 100% { opacity: 0; }
-                    50%       { opacity: 1; }
-                  }
-                  .orbit-a { animation: orbitA 5s linear infinite; transform-origin: 60px 60px; }
-                  .orbit-b { animation: orbitB 3.5s linear infinite; transform-origin: 60px 60px; }
-                  .core    { animation: pulse 2.4s ease-in-out infinite; }
-                  .ring    { animation: shimmer 3s ease-in-out infinite alternate; stroke-dasharray: 283; }
-                  .cursor  { animation: blink 1.2s step-start infinite; }
-                `}</style>
+                @keyframes orbitA {
+                  from { transform: rotate(0deg) translateX(38px) rotate(0deg); }
+                  to   { transform: rotate(360deg) translateX(38px) rotate(-360deg); }
+                }
+                @keyframes orbitB {
+                  from { transform: rotate(180deg) translateX(24px) rotate(-180deg); }
+                  to   { transform: rotate(540deg) translateX(24px) rotate(-540deg); }
+                }
+                @keyframes pulse {
+                  0%, 100% { opacity: 0.35; r: 5; }
+                  50%       { opacity: 0.9;  r: 6.5; }
+                }
+                @keyframes shimmer {
+                  0%   { stroke-dashoffset: 283; }
+                  100% { stroke-dashoffset: 0; }
+                }
+                @keyframes blink {
+                  0%, 100% { opacity: 0; }
+                  50%       { opacity: 1; }
+                }
+                .orbit-a { animation: orbitA 5s linear infinite; transform-origin: 60px 60px; }
+                .orbit-b { animation: orbitB 3.5s linear infinite; transform-origin: 60px 60px; }
+                .core    { animation: pulse 2.4s ease-in-out infinite; }
+                .ring    { animation: shimmer 3s ease-in-out infinite alternate; stroke-dasharray: 283; }
+                .cursor  { animation: blink 1.2s step-start infinite; }
+              `}</style>
 
               <circle cx="60" cy="60" r="45" stroke="rgba(139,92,246,0.12)" strokeWidth="1" />
               <circle cx="60" cy="60" r="45" stroke="rgba(139,92,246,0.5)" strokeWidth="1" strokeLinecap="round" className="ring" />
-
               <circle cx="60" cy="60" r="28" stroke="rgba(139,92,246,0.08)" strokeWidth="1" strokeDasharray="4 6" />
-
               <g className="orbit-a">
                 <circle cx="60" cy="60" r="5" fill="rgba(167,139,250,0.9)" className="core" />
                 <circle cx="60" cy="60" r="10" fill="rgba(139,92,246,0.15)" />
               </g>
-
               <g className="orbit-b">
                 <circle cx="60" cy="60" r="3" fill="rgba(192,168,255,0.7)" />
                 <circle cx="60" cy="60" r="6" fill="rgba(139,92,246,0.1)" />
               </g>
-
               <rect x="44" y="55" width="32" height="20" rx="3" fill="rgba(9,9,15,0.85)" stroke="rgba(139,92,246,0.35)" strokeWidth="1" />
               <rect x="48" y="59" width="10" height="1.5" rx="1" fill="rgba(192,168,255,0.3)" />
               <rect x="48" y="63" width="16" height="1.5" rx="1" fill="rgba(192,168,255,0.2)" />
@@ -367,7 +368,7 @@ const TestimonialPage = () => {
           </motion.div>
         ) : (
           testimonials.map((t, i) => (
-            <TestimonialCard key={t.name} testimonial={t} index={i} />
+            <TestimonialCard key={t.testimonial_id} testimonial={t} index={i} />
           ))
         )}
       </div>
