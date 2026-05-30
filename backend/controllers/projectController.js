@@ -19,7 +19,45 @@ const fetchProjects = async (req, res)=>{
     }
 };
 
-const addProject = async (req, res) => {
+const addMinorProject = async (req, res) => {
+    try {
+        const { 
+            name, description, is_major,project_link 
+        } = req.body;
+        if (
+            !name || 
+            !description || 
+            !project_link || 
+            is_major === undefined 
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "One or multiple required fields are missing or empty."
+            });
+        }
+        const newProjectData = await project.create({
+            project_name: name,
+            project_description: description,
+            project_url: project_link,
+            project_type: {
+                is_major_project: is_major,
+            },
+        });
+        return res.status(201).json({
+            success: true,
+            message: `${name} added successfully to ${is_major ? "major" : "minor"} projects list.`,
+            data: newProjectData
+        });
+    } catch (error) {
+        console.error("[addProject Error]:", error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+const addMajorProject = async (req, res) => {
     try {
         const { 
             name, description, img_url, is_major, 
@@ -125,7 +163,8 @@ const deleteProject = async (req, res)=>{
 
 
 module.exports ={
-    addProject,
+    addMajorProject,
+    addMinorProject,
     fetchProjects,
     updateProject,
     deleteProject

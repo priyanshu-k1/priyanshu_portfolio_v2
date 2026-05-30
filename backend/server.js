@@ -24,10 +24,6 @@ app.use(express.json());
 
 
 //Routes
-app.get('/', (req, res) => {
-  res.send('Hello World !')
-})
-
 app.use('/api/fetchSkills',skillsRoute);
 app.use('/api/fetchProjects',projectsRoute);
 app.use('/api/fetchContactDetails',contactRoute);
@@ -36,6 +32,11 @@ app.use('/api/admin',adminRoute);
 app.use('/api/analytics', analyticsRoute);
 app.use('/api/message',messageRoute)
 app.use('/api/image-upload', imageUploadRoute);
+
+//Health check route
+app.get('/api/healthcheck', (req, res) => {
+  res.json({ isActive: true });
+});
 
 
 

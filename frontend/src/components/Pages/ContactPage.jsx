@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion, useInView, AnimatePresence } from "motion/react"
-import { useRef, useState, useCallback } from "react"
+import { useRef, useState, useCallback,useEffect } from "react"
 
 const useToast = () => {
   const [toasts, setToasts] = useState([])
@@ -98,6 +98,7 @@ const ContactPage = () => {
   const [sending, setSending] = useState(false)
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api"
   const [customBorderColor, setBorderColor] = useState("1px solid rgba(139,92,246,0.2)");
+  const [messageBoxVisiblity,setmessageBoxVisiblity] = useState(false)
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("priyanshukumar0419@gmail.com").then(() => {
@@ -106,6 +107,28 @@ const ContactPage = () => {
       push("Failed to copy email", "error")
     })
   }
+
+  useEffect(() => {
+  const checkConnectivity = async () => {
+      try {
+        const response = await fetch(`${API_URL}/healthcheck`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.isActive) {
+            setmessageBoxVisiblity(true);
+          } else {
+            setmessageBoxVisiblity(false);
+          }
+        } else {
+          setmessageBoxVisiblity(false);
+        }
+      } catch (error) {
+        setmessageBoxVisiblity(false);
+      }
+    };
+    
+    setTimeout(checkConnectivity, 500);
+  }), [API_URL];
 
   const handleSubmit = async(e) => {
     e.preventDefault()
@@ -408,8 +431,9 @@ const ContactPage = () => {
               </div>
             </div>
           </div>
-
-          <motion.div
+          {
+            messageBoxVisiblity && (
+              <motion.div
             ref={formRef}
             className="flex flex-col gap-8 p-8 rounded-2xl"
             style={{
@@ -417,7 +441,7 @@ const ContactPage = () => {
               background: "radial-gradient(ellipse at top right, rgba(139,92,246,0.06) 0%, rgba(9,9,15,0) 70%), rgba(255,255,255,0.02)",
             }}
             initial={{ opacity: 0, y: 32 }}
-            animate={formInView ? { opacity: 1, y: 0 } : {}}
+            animate={messageBoxVisiblity ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
             <div className="flex flex-col gap-1">
@@ -537,7 +561,9 @@ const ContactPage = () => {
                 </>
               )}
             </motion.button>
-          </motion.div>
+              </motion.div>
+            )
+          }
         </div>
       </section>
     </>
