@@ -21,8 +21,6 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
-
 //Routes
 app.use('/api/fetchSkills',skillsRoute);
 app.use('/api/fetchProjects',projectsRoute);

@@ -116,6 +116,7 @@ const ContactPage = () => {
           const data = await response.json();
           if (data.isActive) {
             setmessageBoxVisiblity(true);
+            push("Connected to server successfully!");
           } else {
             setmessageBoxVisiblity(false);
           }
@@ -126,7 +127,6 @@ const ContactPage = () => {
         setmessageBoxVisiblity(false);
       }
     };
-    
     setTimeout(checkConnectivity, 500);
   }), [API_URL];
 
