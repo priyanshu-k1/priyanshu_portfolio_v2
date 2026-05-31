@@ -98,7 +98,7 @@ const ContactPage = () => {
   const [sending, setSending] = useState(false)
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api"
   const [customBorderColor, setBorderColor] = useState("1px solid rgba(139,92,246,0.2)");
-  const [messageBoxVisiblity,setmessageBoxVisiblity] = useState(false)
+  const messageBoxVisiblity = true
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("priyanshukumar0419@gmail.com").then(() => {
@@ -108,27 +108,26 @@ const ContactPage = () => {
     })
   }
 
-  useEffect(() => {
-  const checkConnectivity = async () => {
-      try {
-        const response = await fetch(`${API_URL}/healthcheck`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.isActive) {
-            setmessageBoxVisiblity(true);
-            push("Connected to server successfully!");
-          } else {
-            setmessageBoxVisiblity(false);
-          }
-        } else {
-          setmessageBoxVisiblity(false);
-        }
-      } catch (error) {
-        setmessageBoxVisiblity(false);
-      }
-    };
-    setTimeout(checkConnectivity, 500);
-  }), [API_URL];
+  // useEffect(() => {
+  // const checkConnectivity = async () => {
+  //     try {
+  //       const response = await fetch(`${API_URL}/healthcheck`);
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         if (data.isActive) {
+  //           setmessageBoxVisiblity(true);
+  //         } else {
+  //           setmessageBoxVisiblity(false);
+  //         }
+  //       } else {
+  //         setmessageBoxVisiblity(false);
+  //       }
+  //     } catch (error) {
+  //       setmessageBoxVisiblity(false);
+  //     }
+  //   };
+  //   setTimeout(checkConnectivity, 500);
+  // }), [API_URL];
 
   const handleSubmit = async(e) => {
     e.preventDefault()
@@ -179,7 +178,6 @@ const ContactPage = () => {
     }
 
   }
-
   const SOCIALS = [
     {
       label: "WhatsApp",

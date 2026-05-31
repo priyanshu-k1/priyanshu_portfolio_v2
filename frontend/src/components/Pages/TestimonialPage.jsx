@@ -122,6 +122,19 @@ const TestimonialCard = ({ testimonial, index }) => {
     </motion.div>
   )
 }
+const backupData = [{
+  "title": "Excellent experience with a reliable and talented web developer.",
+  "description": "Working with Priyanshu was a great experience. He created a clean, modern, and professional website exactly the way I wanted. The design, speed, and overall user experience are excellent. He was very responsive, understood all my requirements clearly, and completed the work on time. I highly recommend Priyanshu to anyone looking for a reliable and talented web developer.",
+  "status": "published",
+  "image_url": "https://res.cloudinary.com/dpmflnpcd/image/upload/v1779520538/portfolio/testimonial-profiles/ddufuzk2wtip27kajfra.jpg",
+  "project_meta": {
+    "project_type": "Frontend",
+    "project_link": "https://www.ifixproapple.com/",
+    "client_name": "Nitin (iFix_Pro)",
+    "feedback_stars": 5
+  },
+  "testimonial_id": "14402231-2526-45fc-aec4-bd06cdbc9961",
+}]
 
 const TestimonialPage = () => {
   const headerRef = useRef(null)
@@ -132,32 +145,34 @@ const TestimonialPage = () => {
   const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api`
 
   useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const response = await fetch(`${API_URL}/fetchTestimonials/`)
+  const fetchTestimonials = async () => {
+    try {
+      const response = await fetch(`${API_URL}/fetchTestimonials/`)
 
-        if (!response.ok) {
-          throw new Error(`Server responded with status ${response.status}`)
-        }
-
-        const json = await response.json()
-
-        if (json.success && Array.isArray(json.data)) {
-          const published = json.data.filter(t => t.status === 'published')
-          setTestimonials(published)
-        } else {
-          setTestimonials([])
-        }
-      } catch (err) {
-        console.error('Error fetching testimonials:', err)
-        setError(err.message)
-      } finally {
-        setLoading(false)
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`)
       }
-    }
 
-    fetchTestimonials()
-  }, [API_URL])
+      const json = await response.json()
+
+      if (json.success && Array.isArray(json.data)) {
+        const published = json.data.filter(t => t.status === 'published')
+        setTestimonials(published)
+        setError(null)
+      } else {
+        setTestimonials(backupData)
+        setError(null)
+      }
+    } catch (err) {
+      console.error('Error fetching testimonials, falling back to backup data:', err)
+      setTestimonials(backupData)
+      setError(null) 
+    } finally {
+      setLoading(false)
+    }
+  }
+  setTimeout(fetchTestimonials, 500);
+}, [API_URL])
 
   return (
     <section
