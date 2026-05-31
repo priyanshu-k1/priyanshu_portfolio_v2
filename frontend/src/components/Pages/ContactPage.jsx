@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion, useInView, AnimatePresence } from "motion/react"
-import { useRef, useState, useCallback } from "react"
+import { useRef, useState, useCallback,useEffect } from "react"
 
 const useToast = () => {
   const [toasts, setToasts] = useState([])
@@ -93,11 +93,12 @@ const ContactPage = () => {
   const infoInView = useInView(infoRef, { once: true, margin: "-60px" })
   const formRef = useRef(null)
   const formInView = useInView(formRef, { once: true, margin: "-60px" })
-
   const { toasts, push, dismiss } = useToast()
-
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" })
   const [sending, setSending] = useState(false)
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api"
+  const [customBorderColor, setBorderColor] = useState("1px solid rgba(139,92,246,0.2)");
+  const [messageBoxVisiblity,setmessageBoxVisiblity] = useState(false)
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("priyanshukumar0419@gmail.com").then(() => {
@@ -107,18 +108,76 @@ const ContactPage = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+  const checkConnectivity = async () => {
+      try {
+        const response = await fetch(`${API_URL}/healthcheck`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.isActive) {
+            setmessageBoxVisiblity(true);
+            push("Connected to server successfully!");
+          } else {
+            setmessageBoxVisiblity(false);
+          }
+        } else {
+          setmessageBoxVisiblity(false);
+        }
+      } catch (error) {
+        setmessageBoxVisiblity(false);
+      }
+    };
+    setTimeout(checkConnectivity, 500);
+  }), [API_URL];
+
+  const handleSubmit = async(e) => {
     e.preventDefault()
-    if (!form.name || !form.email || !form.message) {
+    if (!form.name || !form.email || !form.message ,!form.phone) {
       push("Please fill all required fields", "error")
       return
     }
     setSending(true)
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${API_URL}/message/postmessage`,
+        {
+          method:'POST',
+          headers: {'Content-Type': 'application/json',},
+          body:JSON.stringify({
+            fname:form.name,
+            email:form.email,
+            pnumber:form.phone,
+            message:form.message
+         })
+        }
+      )
+      const data = await response.json()
+      if(data.success){
+        setBorderColor("1px solid rgba(111, 250, 132, 0.2)")
+        setForm({ name: "", email: "", phone: "", message: "" })
+        push("Message sent successfully!")
+        setTimeout(() => {
+          setBorderColor("1px solid rgba(139,92,246,0.2)")
+        }, 2000)
+      }
+      else{
+         setBorderColor("1px solid rgba(248, 79, 79, 0.2)")
+         push("Failed to send the message!", data.message)
+         setTimeout(() => {
+          setBorderColor("1px solid rgba(139,92,246,0.2)")
+          }, 2000)
+      }
+    }
+    catch (error) {
+      setBorderColor("1px solid rgba(248, 79, 79, 0.2)")
+      push("Failed to send message", `${error.message || "error"}`)
+      setTimeout(() => {
+           setBorderColor("1px solid rgba(139,92,246,0.2)")
+      }, 2000)
+    }
+    finally {
       setSending(false)
-      setForm({ name: "", email: "", phone: "", message: "" })
-      push("Message sent successfully!")
-    }, 1800)
+    }
+
   }
 
   const SOCIALS = [
@@ -372,16 +431,17 @@ const ContactPage = () => {
               </div>
             </div>
           </div>
-
-          <motion.div
+          {
+            messageBoxVisiblity && (
+              <motion.div
             ref={formRef}
             className="flex flex-col gap-8 p-8 rounded-2xl"
             style={{
-              border: "1px solid rgba(139,92,246,0.2)",
+              border: customBorderColor,
               background: "radial-gradient(ellipse at top right, rgba(139,92,246,0.06) 0%, rgba(9,9,15,0) 70%), rgba(255,255,255,0.02)",
             }}
             initial={{ opacity: 0, y: 32 }}
-            animate={formInView ? { opacity: 1, y: 0 } : {}}
+            animate={messageBoxVisiblity ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
           >
             <div className="flex flex-col gap-1">
@@ -410,6 +470,10 @@ const ContactPage = () => {
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   className={inputClass}
+                  style={{ border: customBorderColor,
+                    padding: "12px",
+                    borderRadius: "8px",
+                   }}
                 />
               </div>
 
@@ -423,6 +487,10 @@ const ContactPage = () => {
                   value={form.email}
                   onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   className={inputClass}
+                  style={{ border: customBorderColor,
+                    padding: "12px",
+                    borderRadius: "8px",
+                   }}
                 />
               </div>
 
@@ -436,6 +504,9 @@ const ContactPage = () => {
                   value={form.phone}
                   onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                   className={inputClass}
+                  style={{ border: customBorderColor,
+                    padding: "12px",
+                    borderRadius: "8px", }}
                 />
               </div>
 
@@ -449,6 +520,9 @@ const ContactPage = () => {
                   value={form.message}
                   onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                   className={`${inputClass} resize-none`}
+                  style={{ border: customBorderColor,
+                    padding: "12px",
+                    borderRadius: "8px", }}
                 />
               </div>
             </div>
@@ -461,7 +535,7 @@ const ContactPage = () => {
                 background: sending
                   ? "rgba(139,92,246,0.15)"
                   : "linear-gradient(135deg, rgba(139,92,246,0.9), rgba(109,40,217,0.9))",
-                border: "1px solid rgba(139,92,246,0.5)",
+                border: customBorderColor,
                 color: sending ? "rgba(167,139,250,0.5)" : "#f0e8ff",
                 cursor: sending ? "not-allowed" : "pointer",
               }}
@@ -487,7 +561,9 @@ const ContactPage = () => {
                 </>
               )}
             </motion.button>
-          </motion.div>
+              </motion.div>
+            )
+          }
         </div>
       </section>
     </>
