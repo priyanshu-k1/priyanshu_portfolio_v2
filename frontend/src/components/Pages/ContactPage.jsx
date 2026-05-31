@@ -98,7 +98,7 @@ const ContactPage = () => {
   const [sending, setSending] = useState(false)
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api"
   const [customBorderColor, setBorderColor] = useState("1px solid rgba(139,92,246,0.2)");
-  const [messageBoxVisiblity,setmessageBoxVisiblity] = useState(true)
+  const messageBoxVisiblity = true
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("priyanshukumar0419@gmail.com").then(() => {
@@ -178,7 +178,6 @@ const ContactPage = () => {
     }
 
   }
-
   const SOCIALS = [
     {
       label: "WhatsApp",
