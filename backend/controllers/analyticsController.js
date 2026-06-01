@@ -248,10 +248,31 @@ const getDashboardSummary = async (req, res) => {
 };
 
 
+const getTodayVisitors = async (req, res) => {
+  try {
+    const now = Date.now();
+    const todayMidnight = new Date();
+    todayMidnight.setHours(0, 0, 0, 0);
+    const startAt = todayMidnight.getTime();
+
+    const { data } = await umamiClient.get(`/websites/${WEBSITE_ID}/stats`, {
+      params: { startAt, endAt: now },
+    });
+
+    const visitors = data.visitors?.value ?? 0;
+
+    return res.status(200).json({ visitors, date: todayMidnight.toISOString().split('T')[0] });
+  } catch (error) {
+    console.error('Today visitors error:', error?.response?.data || error.message);
+    return res.status(500).json({ message: 'Failed to fetch today\'s visitors.' });
+  }
+};
+
 module.exports = {
   getAnalyticsOverview,
   getTopPages,
   getTopReferrers,
   getDeviceBreakdown,
   getDashboardSummary,
+  getTodayVisitors,
 };

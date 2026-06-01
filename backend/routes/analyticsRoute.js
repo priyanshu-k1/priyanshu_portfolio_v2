@@ -7,6 +7,7 @@ const {
   getTopReferrers,
   getDeviceBreakdown,
   getDashboardSummary,
+  getTodayVisitors,
 } = require('../controllers/analyticsController');
 
 router.use(authMiddleware);
@@ -18,5 +19,6 @@ router.get('/top-pages', getTopPages);
 router.get('/top-referrers', getTopReferrers);
 router.get('/devices', getDeviceBreakdown);
 router.get('/dashboard', getDashboardSummary);
+router.get('/today-visitors', getTodayVisitors);
 
 module.exports = router;
