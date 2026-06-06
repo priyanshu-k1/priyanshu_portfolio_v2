@@ -96,7 +96,7 @@ const ContactPage = () => {
   const { toasts, push, dismiss } = useToast()
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" })
   const [sending, setSending] = useState(false)
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001/api"
+  const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api`
   const [customBorderColor, setBorderColor] = useState("1px solid rgba(139,92,246,0.2)");
   const messageBoxVisiblity = true
 

@@ -29,6 +29,18 @@ const UserContactSchema = new mongoose.Schema({
                 type: String,
             }
         }, 
+        resume_link:{
+            word_link: {
+                type:String,
+                require:[true,"Word links are required."],
+                default:"https://drive.google.com/uc?export=download&id=1QzehQxLRRcPlIG9CjVCxZ-zTZ7QQhxdq"
+            },
+            pdf_link: {
+                type:String,
+                require:[true,"PDF links are required."],
+                default:"https://drive.google.com/uc?export=download&id=1-4smRMVFS7QPZYxpwLaLSBNpCil5JVYG"
+            }
+        }
 });
 
 module.exports = mongoose.model("UserContact", UserContactSchema);
