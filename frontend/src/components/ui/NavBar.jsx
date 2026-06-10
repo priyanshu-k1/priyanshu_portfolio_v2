@@ -80,8 +80,9 @@ const NavBar = () => {
 
 const handleDownload = () => {
   const url = [
-    "https://drive.google.com/uc?export=download&id=1-4smRMVFS7QPZYxpwLaLSBNpCil5JVYG",
-    "https://drive.google.com/uc?export=download&id=1QzehQxLRRcPlIG9CjVCxZ-zTZ7QQhxdq"
+    "https://drive.google.com/uc?export=download&id=15ieD4jv084hTzCNaUVzqm-XfwKSKaB39",
+  
+    "https://docs.google.com/document/d/14PFTBZEKTudl59RrXisxL3-aHh-4QxQk/export?format=docx"
   ]
   
   const link = document.createElement('a')
