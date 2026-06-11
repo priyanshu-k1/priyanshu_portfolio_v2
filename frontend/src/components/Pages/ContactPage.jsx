@@ -107,28 +107,6 @@ const ContactPage = () => {
       push("Failed to copy email", "error")
     })
   }
-
-  // useEffect(() => {
-  // const checkConnectivity = async () => {
-  //     try {
-  //       const response = await fetch(`${API_URL}/healthcheck`);
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         if (data.isActive) {
-  //           setmessageBoxVisiblity(true);
-  //         } else {
-  //           setmessageBoxVisiblity(false);
-  //         }
-  //       } else {
-  //         setmessageBoxVisiblity(false);
-  //       }
-  //     } catch (error) {
-  //       setmessageBoxVisiblity(false);
-  //     }
-  //   };
-  //   setTimeout(checkConnectivity, 500);
-  // }), [API_URL];
-
   const handleSubmit = async(e) => {
     e.preventDefault()
     if (!form.name || !form.email || !form.message ,!form.phone) {
