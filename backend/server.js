@@ -12,6 +12,7 @@ const adminRoute = require('./routes/adminRoute');
 const analyticsRoute = require('./routes/analyticsRoute');
 const messageRoute = require('./routes/messageRoute');
 const imageUploadRoute = require('./routes/Imageuploadroutes');
+const resumeUploadRoute = require('./routes/resumeUploadRoute.js');
 
 //Main configs
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/admin',adminRoute);
 app.use('/api/analytics', analyticsRoute);
 app.use('/api/message',messageRoute)
 app.use('/api/image-upload', imageUploadRoute);
+app.use('/api/resume-upload', resumeUploadRoute);
 
 //Health check route
 app.get('/api/healthcheck', (req, res) => {
