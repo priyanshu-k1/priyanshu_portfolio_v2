@@ -120,7 +120,7 @@ const handleDownload = () => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 hidden sm:block"
+                  className="font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 block"
                 >
                   Priyanshu <span className="text-violet-500">codes.</span>
                 </motion.span>
@@ -381,7 +381,6 @@ const handleDownload = () => {
                       </button>
                     ))}
                   </div>
-
                   <button
                     onClick={() => { handleDownload(); setMobileOpen(false) }}
                     className="flex items-center justify-center gap-2 py-3 rounded-xl font-mono text-[11px] uppercase tracking-widest transition-all duration-200 active:scale-95"
