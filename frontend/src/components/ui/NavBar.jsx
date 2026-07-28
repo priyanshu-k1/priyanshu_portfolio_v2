@@ -381,7 +381,6 @@ const handleDownload = () => {
                       </button>
                     ))}
                   </div>
-
                   <button
                     onClick={() => { handleDownload(); setMobileOpen(false) }}
                     className="flex items-center justify-center gap-2 py-3 rounded-xl font-mono text-[11px] uppercase tracking-widest transition-all duration-200 active:scale-95"
