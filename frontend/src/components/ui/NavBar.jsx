@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react'
 import { House, SquareChevronRight, BriefcaseBusiness, Mail, Quote, FileUser, X, Menu } from 'lucide-react'
 import navlogo from '../../assets/logo.png'
 
@@ -12,12 +12,17 @@ const NAV_ITEMS = [
   { name: 'Testimonials', href: '#testimonials', icon: Quote },
 ]
 
+const EASE = [0.16, 1, 0.3, 1]
+
 const NavBar = () => {
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
   const [open, setOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [selected, setSelected] = useState({ label: '.pdf', value: 'PDF' })
+
+  const progress = useMotionValue(0)
+  const progressSmooth = useSpring(progress, { stiffness: 140, damping: 24, mass: 0.4 })
 
   const options = [
     { label: '.pdf', value: 'PDF' },
@@ -41,11 +46,15 @@ const NavBar = () => {
 
   useEffect(() => {
     const scrollContainer = document.querySelector('.snap-y')
+    if (!scrollContainer) return
+
+    let frame = 0
 
     const handleScroll = () => {
-      if (!scrollContainer) return
-
       setScrolled(scrollContainer.scrollTop > 50)
+
+      const max = scrollContainer.scrollHeight - scrollContainer.clientHeight
+      progress.set(max > 0 ? scrollContainer.scrollTop / max : 0)
 
       let maxVisibleSection = null
       let maxVisibility = 0
@@ -67,76 +76,138 @@ const NavBar = () => {
           }
         }
       })
-      
+
       if (maxVisibleSection) setActiveSection(maxVisibleSection)
     }
 
-    if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', handleScroll, { passive: true })
-      handleScroll()
-      return () => scrollContainer.removeEventListener('scroll', handleScroll)
+    const onScroll = () => {
+      if (frame) return
+      frame = requestAnimationFrame(() => {
+        frame = 0
+        handleScroll()
+      })
     }
-  }, [])
 
-const handleDownload = () => {
-  const url = [
-    "https://drive.google.com/uc?export=download&id=15ieD4jv084hTzCNaUVzqm-XfwKSKaB39",
-  
-    "https://docs.google.com/document/d/14PFTBZEKTudl59RrXisxL3-aHh-4QxQk/export?format=docx"
-  ]
-  
-  const link = document.createElement('a')
-  link.href = selected.value === 'PDF' ? url[0] : url[1]
-  link.download = `Priyanshu_kumar_resume.${selected.value.toLowerCase()}`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-}
+    scrollContainer.addEventListener('scroll', onScroll, { passive: true })
+    handleScroll()
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [progress])
+
+  const handleDownload = async () => {
+    const cloudinaryUrls = {
+      PDF: "https://res.cloudinary.com/dpmflnpcd/image/upload/v1792766147/Priyanshu_Kumar_resume_akcf9l.pdf",
+      DOCX: "https://res.cloudinary.com/dpmflnpcd/raw/upload/v1792766160/Priyanshu_Kumar_resume_oeuqti.docx"
+    }
+
+    const selectedFormat = selected.value.toUpperCase()
+    const fileUrl = cloudinaryUrls[selectedFormat]
+    if (!fileUrl) return
+
+    try {
+      const response = await fetch(fileUrl)
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = `Priyanshu_kumar_resume.${selected.value.toLowerCase()}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      window.URL.revokeObjectURL(blobUrl)
+    } catch (error) {
+      console.error("Download failed:", error)
+      window.open(fileUrl, '_blank')
+    }
+  }
+
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
-          scrolled
-            ? 'py-2 sm:py-3 bg-[#09090f]/80 backdrop-blur-md border-violet-500/10 shadow-2xl'
-            : 'py-4 sm:py-6 bg-transparent border-transparent'
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: EASE }}
+        className={`fixed top-0 left-0 right-0 z-50 transform-gpu transition-[padding] duration-500 ease-out ${
+          scrolled ? 'py-2 sm:py-3' : 'py-4 sm:py-6'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 bg-transparent">
+        <motion.div
+          aria-hidden="true"
+          initial={false}
+          animate={{ opacity: scrolled ? 1 : 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="absolute inset-0 pointer-events-none border-b border-violet-500/10 bg-[#09090f]/80 backdrop-blur-md shadow-2xl"
+        />
 
-          <motion.div
-            className="flex items-center gap-2  cursor-pointer shrink-0 "
-          >
-            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center  overflow-hidden bg-transparent">
-              <img src={navlogo} alt="Developer's logo" className={`w-full h-full transition-all duration-900 ease-in-out ${activeSection !== "home"?"rotate-360":"rotate-0"}`}/>
-            </div>
-            <AnimatePresence mode="wait">
-              {activeSection !== "home" && (
-                <motion.span
+        <motion.div
+          aria-hidden="true"
+          className="absolute -bottom-px left-0 right-0 h-px origin-left pointer-events-none"
+          style={{
+            scaleX: progressSmooth,
+            background: 'linear-gradient(90deg, rgba(139,92,246,0), rgba(167,139,250,0.9), rgba(217,70,239,0.7))',
+            boxShadow: '0 0 8px rgba(167,139,250,0.6)',
+            opacity: scrolled ? 1 : 0,
+            transition: 'opacity 0.4s ease',
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 md:grid md:grid-cols-[1fr_auto_1fr]">
+
+          <div className="flex items-center cursor-pointer shrink-0 min-w-0 md:justify-self-start">
+            <motion.div
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center overflow-hidden bg-transparent shrink-0"
+              animate={{ rotate: activeSection !== 'home' ? 360 : 0 }}
+              transition={{ type: 'spring', stiffness: 70, damping: 16 }}
+            >
+              <img src={navlogo} alt="Developer's logo" className="w-full h-full" />
+            </motion.div>
+
+            <AnimatePresence initial={false}>
+              {activeSection !== 'home' && (
+                <motion.div
                   key="brand-name"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100 block"
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{
+                    width: { duration: 0.5, ease: EASE },
+                    opacity: { duration: 0.3, ease: 'easeOut' },
+                  }}
+                  className="overflow-hidden whitespace-nowrap"
                 >
-                  Priyanshu <span className="text-violet-500">codes.</span>
-                </motion.span>
+                  <motion.span
+                    initial={{ x: -16 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -16 }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                    className="block pl-2 font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100"
+                  >
+                    Priyanshu <span className="text-violet-500">codes.</span>
+                  </motion.span>
+                </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          <div className="hidden md:flex items-center gap-0 sm:gap-2 md:gap-4">
-            {NAV_ITEMS.map((item) => {
+          <div className="hidden md:flex items-center gap-0 sm:gap-2 md:gap-4 md:justify-self-center">
+            {NAV_ITEMS.map((item, i) => {
               const sectionId = item.href.substring(1)
               const isActive = activeSection === sectionId
               return (
-                <a
+                <motion.a
                   key={item.name}
                   href={item.href}
                   className="relative px-1.5 xs:px-2 sm:px-3 py-2 group"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 + i * 0.07, duration: 0.5, ease: EASE }}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.96 }}
                 >
                   <div className="flex items-center gap-1.5 relative z-10">
                     <item.icon
@@ -158,23 +229,23 @@ const handleDownload = () => {
                       className="absolute inset-0 bg-violet-500/5 rounded-lg border border-violet-500/20"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     >
-                      <div className="absolute -bottom-3.25 left-1/2 -translate-x-1/2 w-6 sm:w-8 h-px bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
+                      
                     </motion.div>
                   )}
-                </a>
+                </motion.a>
               )
             })}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 md:justify-self-end">
             <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border
              border-violet-500/30 bg-violet-500/10 font-mono text-[9px] sm:text-[10px]
               text-purple-200 uppercase tracking-widest hover:bg-violet-500/20 transition-all 
-              duration-300"
+              duration-300 cursor-pointer"
               onClick={handleDownload}>
               <motion.button
                 className="flex items-center gap-1.5 font-mono"
-                onClick={handleDownload}
+                whileTap={{ scale: 0.95 }}
               >
                 <FileUser size={15} />
                 <span className="hidden md:inline">Resume</span>
@@ -200,7 +271,7 @@ const handleDownload = () => {
                       initial={{ opacity: 0, y: -6, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                      transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                      transition={{ duration: 0.15, ease: EASE }}
                       className="absolute right-0 mt-2 rounded-xl overflow-hidden z-999"
                       style={{
                         border: '1px solid rgba(139,92,246,0.25)',
@@ -287,7 +358,7 @@ const handleDownload = () => {
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.3, ease: EASE }}
             >
               <div
                 className="absolute inset-0 pointer-events-none"
@@ -322,7 +393,7 @@ const handleDownload = () => {
                         style={{ borderBottom: '1px solid rgba(139,92,246,0.08)' }}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.05 + i * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        transition={{ delay: 0.05 + i * 0.06, duration: 0.35, ease: EASE }}
                         onClick={() => setMobileOpen(false)}
                       >
                         <div
