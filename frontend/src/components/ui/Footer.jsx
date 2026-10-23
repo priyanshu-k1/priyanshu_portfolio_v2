@@ -6,6 +6,7 @@ import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram,FaWhatsapp } from "react-
 
 import navlogo from "../../assets/logo.png";
 import FooterTypedHeroText from "./FooterTypedHeroText";
+import { Link } from "react-router-dom";
 
 const NAV_ITEMS = [
   { name: "Home", href: "#home" },
@@ -405,6 +406,13 @@ const Footer = () => {
             <span className="font-mono text-[10px] text-violet-400/60 uppercase tracking-widest">
               All rights reserved
             </span>
+            <span className="w-px h-3 bg-violet-500/20" />
+            <Link
+              to="/privacy-policy"
+              className="font-mono text-[10px] text-purple-200/30 hover:text-violet-400 uppercase tracking-widest transition-colors"
+            >
+              Privacy Policy
+            </Link>
           </div>
 
           <motion.button
