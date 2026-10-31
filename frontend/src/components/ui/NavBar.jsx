@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react'
 import { House, SquareChevronRight, BriefcaseBusiness, Mail, Quote, FileUser, X, Menu } from 'lucide-react'
 import navlogo from '../../assets/logo.png'
+import posthog, { isPosthogConfigured } from '../../lib/posthog.js'
 
 const NAV_ITEMS = [
   { name: 'Home', href: '#home', icon: House },
@@ -106,6 +107,8 @@ const NavBar = () => {
     const selectedFormat = selected.value.toUpperCase()
     const fileUrl = cloudinaryUrls[selectedFormat]
     if (!fileUrl) return
+
+    if (isPosthogConfigured) posthog.capture('resume_download_requested', { format: selectedFormat.toLowerCase() })
 
     try {
       const response = await fetch(fileUrl)

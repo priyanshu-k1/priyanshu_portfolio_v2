@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { motion, useInView, AnimatePresence } from "motion/react"
 import { useRef, useState, useCallback,useEffect } from "react"
+import posthog, { isPosthogConfigured } from "../../lib/posthog.js"
+import contactFormLogger from "../../lib/posthog-logger.js"
 
 const useToast = () => {
   const [toasts, setToasts] = useState([])
@@ -102,6 +104,7 @@ const ContactPage = () => {
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText("priyanshukumar0419@gmail.com").then(() => {
+      if (isPosthogConfigured) posthog.capture("contact_email_copied")
       push("Email copied to clipboard")
     }).catch(() => {
       push("Failed to copy email", "error")
@@ -131,6 +134,8 @@ const ContactPage = () => {
       if(data.success){
         setBorderColor("1px solid rgba(111, 250, 132, 0.2)")
         setForm({ name: "", email: "", phone: "", message: "" })
+        if (isPosthogConfigured) posthog.capture("contact_form_submitted")
+        contactFormLogger.submitted()
         push("Message sent successfully!")
         setTimeout(() => {
           setBorderColor("1px solid rgba(139,92,246,0.2)")
@@ -138,6 +143,8 @@ const ContactPage = () => {
       }
       else{
          setBorderColor("1px solid rgba(248, 79, 79, 0.2)")
+         if (isPosthogConfigured) posthog.capture("contact_form_submission_failed")
+         contactFormLogger.failed()
          push("Failed to send the message!", data.message)
          setTimeout(() => {
           setBorderColor("1px solid rgba(139,92,246,0.2)")
@@ -146,6 +153,8 @@ const ContactPage = () => {
     }
     catch (error) {
       setBorderColor("1px solid rgba(248, 79, 79, 0.2)")
+      if (isPosthogConfigured) posthog.capture("contact_form_submission_failed")
+      contactFormLogger.failed()
       push("Failed to send message", `${error.message || "error"}`)
       setTimeout(() => {
            setBorderColor("1px solid rgba(139,92,246,0.2)")
@@ -300,6 +309,7 @@ const ContactPage = () => {
 
               <motion.a
                 href="tel:+919302771737"
+                onClick={() => isPosthogConfigured && posthog.capture("contact_method_selected", { method: "phone" })}
                 className="flex items-center gap-4 group"
                 initial={{ opacity: 0, x: -16 }}
                 animate={infoInView ? { opacity: 1, x: 0 } : {}}
@@ -382,6 +392,7 @@ const ContactPage = () => {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => isPosthogConfigured && posthog.capture("contact_method_selected", { method: "social", platform: s.label })}
                     className="flex items-center gap-3 p-3.5 rounded-xl group transition-all duration-200"
                     style={{
                       border: `1px solid ${s.border}`,

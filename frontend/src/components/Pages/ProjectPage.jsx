@@ -3,6 +3,7 @@ import { motion, useInView, AnimatePresence } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 import projectData from "./project.json"
 import { Zap } from "lucide-react"
+import posthog, { isPosthogConfigured } from "../../lib/posthog.js"
 
 const DUMMY_IMAGES = [
   "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&q=80",
@@ -132,6 +133,7 @@ const ProjectModal = ({ project, onClose }) => {
             href={project.link}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => isPosthogConfigured && posthog.capture("project_repository_opened", { source: "project_modal" })}
             className="flex items-center gap-2.5 font-mono text-[11px] tracking-wide text-violet-400 hover:text-violet-200 transition-colors self-start group"
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -158,7 +160,10 @@ const FeaturedCard = ({ project, onOpen }) => {
       initial={{ opacity: 0, y: 32 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-      onClick={() => onOpen(project)}
+      onClick={() => {
+        if (isPosthogConfigured) posthog.capture("project_details_opened", { layout: "featured" })
+        onOpen(project)
+      }}
     >
       <img
         src={project._bannerUrl}
@@ -223,7 +228,10 @@ const FeaturedCard = ({ project, onOpen }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-mono text-[10px] tracking-wide text-violet-400/70 hover:text-violet-300 transition-colors duration-200"
-                onClick={e => e.stopPropagation()}
+                onClick={e => {
+                  e.stopPropagation()
+                  if (isPosthogConfigured) posthog.capture("project_repository_opened", { source: "featured_card" })
+                }}
               >
                 GitHub ↗
               </a>
@@ -262,7 +270,10 @@ const StandardCard = ({ project, index, onOpen }) => {
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: index * 0.08 }}
-      onClick={() => onOpen(project)}
+      onClick={() => {
+        if (isPosthogConfigured) posthog.capture("project_details_opened", { layout: "standard" })
+        onOpen(project)
+      }}
     >
       <div className="relative h-44 shrink-0 overflow-hidden">
         <img
@@ -318,7 +329,10 @@ const StandardCard = ({ project, index, onOpen }) => {
             target="_blank"
             rel="noopener noreferrer"
             className="font-mono text-[9px] tracking-wide text-violet-500/35 hover:text-violet-300 transition-colors duration-200"
-            onClick={e => e.stopPropagation()}
+            onClick={e => {
+              e.stopPropagation()
+              if (isPosthogConfigured) posthog.capture("project_repository_opened", { source: "standard_card" })
+            }}
           >
             GitHub ↗
           </a>
@@ -344,6 +358,7 @@ const MinorProjectRow = ({ project, index }) => {
       animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.06 }}
       whileHover={{ x: 4, transition: { duration: 0.15 } }}
+      onClick={() => isPosthogConfigured && posthog.capture("project_repository_opened", { source: "minor_project" })}
     >
       <span className="font-mono text-[10px] text-violet-400/70 w-6 shrink-0 tabular-nums">
         {String(index + 1).padStart(2, "0")}

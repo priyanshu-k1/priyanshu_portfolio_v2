@@ -54,7 +54,7 @@ const sendMessage = async (req, res) => {
 const deleteMessage = async (req, res) => {
     try {
         const { id } = req.params;
-        const messageToDelete = await Message.findOneAndDelete({ message_id: id });
+        const messageToDelete = await Message.findOneAndDelete({ _id: id });
         if (!messageToDelete) {
             return res.status(404).json({
                 success: false,
