@@ -1,9 +1,15 @@
 const axios = require('axios');
 
 const POSTHOG_HOST       = (process.env.POSTHOG_HOST || 'https://eu.posthog.com').replace(/\/$/, '');
-const POSTHOG_API_KEY    = process.env.POSTHOG_PERSONAL_API_KEY;
+// The PostHog query API requires a Personal API Key (phx_...). Accept the
+// older POSTHOG_API_KEY name as a fallback for existing local deployments.
+const POSTHOG_API_KEY    = (process.env.POSTHOG_PERSONAL_API_KEY || process.env.POSTHOG_API_KEY || '').trim();
 const POSTHOG_PROJECT_ID = process.env.POSTHOG_PROJECT_ID;
 const CACHE_TTL_MS       = Number(process.env.ANALYTICS_CACHE_TTL_MS) || 60 * 1000;
+
+if (!POSTHOG_API_KEY) {
+  console.warn('PostHog analytics is not configured: set POSTHOG_PERSONAL_API_KEY to a PostHog Personal API Key.');
+}
 
 const posthogClient = axios.create({
   baseURL: POSTHOG_HOST,
@@ -280,6 +286,29 @@ const fetchCountries = async ({ startAt, endAt }, limit) => {
   );
 };
 
+const fetchCities = async ({ startAt, endAt }, limit) => {
+  const rows = await runQuery(`
+    SELECT
+      properties.$geoip_city_name AS city,
+      properties.$geoip_country_name AS country,
+      uniq(person_id) AS visitors
+    FROM events
+    WHERE event = '$pageview'
+      AND properties.$geoip_city_name IS NOT NULL
+      AND properties.$geoip_city_name != ''
+      AND ${rangeClause('timestamp', startAt, endAt)}
+    GROUP BY city, country
+    ORDER BY visitors DESC
+    LIMIT ${limit}
+  `, 'top-cities');
+
+  return rows.map(([city, country, visitors]) => ({
+    city,
+    country: country || 'Unknown',
+    visitors: toNumber(visitors),
+  }));
+};
+
 const fetchTrend = async ({ startAt, endAt }) => {
   const hourly = endAt - startAt <= 2 * 24 * 60 * 60 * 1000;
   const bucket = hourly ? 'toStartOfHour(timestamp)' : 'toStartOfDay(timestamp)';
@@ -385,6 +414,21 @@ const getTopCountries = async (req, res) => {
   } catch (error) {
     console.error('Top countries error:', error?.response?.data || error.message);
     return res.status(500).json({ message: 'Failed to fetch top countries.' });
+  }
+};
+
+const getLocations = async (req, res) => {
+  try {
+    const range = resolveTimeRange(req.query);
+    const limit = clampLimit(req.query.limit, 100);
+    const [countries, cities] = await Promise.all([
+      fetchCountries(range, limit),
+      fetchCities(range, limit),
+    ]);
+    return res.status(200).json({ countries, cities });
+  } catch (error) {
+    console.error('Locations error:', error?.response?.data || error.message);
+    return res.status(500).json({ message: 'Failed to fetch analytics locations.' });
   }
 };
 
@@ -496,6 +540,7 @@ module.exports = {
   getBrowserBreakdown,
   getOsBreakdown,
   getTopCountries,
+  getLocations,
   getTrafficTrend,
   getDashboardSummary,
   getTodayVisitors,

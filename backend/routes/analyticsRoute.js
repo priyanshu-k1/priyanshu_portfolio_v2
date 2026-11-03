@@ -9,6 +9,7 @@ const {
   getBrowserBreakdown,
   getOsBreakdown,
   getTopCountries,
+  getLocations,
   getTrafficTrend,
   getDashboardSummary,
   getTodayVisitors,
@@ -24,6 +25,7 @@ router.get('/devices', getDeviceBreakdown);
 router.get('/browsers', getBrowserBreakdown);
 router.get('/os', getOsBreakdown);
 router.get('/countries', getTopCountries);
+router.get('/locations', getLocations);
 router.get('/trend', getTrafficTrend);
 router.get('/dashboard', getDashboardSummary);
 router.get('/today-visitors', getTodayVisitors);
