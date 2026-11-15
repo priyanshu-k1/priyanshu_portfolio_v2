@@ -1,49 +1,89 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react'
-import { House, SquareChevronRight, BriefcaseBusiness, Mail, Quote, FileUser, X, Menu } from 'lucide-react'
+import { FileUser } from 'lucide-react'
 import navlogo from '../../assets/logo.png'
 import posthog, { isPosthogConfigured } from '../../lib/posthog.js'
 
 const NAV_ITEMS = [
-  { name: 'Home', href: '#home', icon: House },
-  { name: 'Skills', href: '#skills', icon: SquareChevronRight },
-  { name: 'Projects', href: '#projects', icon: BriefcaseBusiness },
-  { name: 'Contact', href: '#contact', icon: Mail },
-  { name: 'Testimonials', href: '#testimonials', icon: Quote },
+  { name: 'Home', href: '#home' },
+  { name: 'Skills', href: '#skills' },
+  { name: 'Projects', href: '#projects' },
+  { name: 'Contact', href: '#contact' },
+  { name: 'Testimonials', href: '#testimonials' },
 ]
 
-const EASE = [0.16, 1, 0.3, 1]
+const FORMATS = [
+  { label: '.pdf', value: 'PDF' },
+  { label: '.docx', value: 'DOCX' },
+]
+
+const RESUME_URLS = {
+  PDF: 'https://res.cloudinary.com/dpmflnpcd/image/upload/v1792766147/Priyanshu_Kumar_resume_akcf9l.pdf',
+  DOCX: 'https://res.cloudinary.com/dpmflnpcd/raw/upload/v1792766160/Priyanshu_Kumar_resume_oeuqti.docx',
+}
+
+const EASE = [0.2, 0, 0, 1]
+
+const getInitialTheme = () => {
+  try {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch (error) {
+    void error
+  }
+  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches) return 'light'
+  return 'dark'
+}
 
 const NavBar = () => {
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
-  const [open, setOpen] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [selected, setSelected] = useState({ label: '.pdf', value: 'PDF' })
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [formatOpen, setFormatOpen] = useState(false)
+  const [theme, setTheme] = useState(getInitialTheme)
 
   const progress = useMotionValue(0)
   const progressSmooth = useSpring(progress, { stiffness: 140, damping: 24, mass: 0.4 })
 
-  const options = [
-    { label: '.pdf', value: 'PDF' },
-    { label: '.docx', value: 'DOCX' },
-  ]
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    try {
+      localStorage.setItem('theme', theme)
+    } catch (error) {
+      void error
+    }
+  }, [theme])
 
   useEffect(() => {
-    const close = () => setOpen(false)
-    if (open) document.addEventListener('click', close)
-    return () => document.removeEventListener('click', close)
-  }, [open])
-
-  useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
+    document.body.style.overflow = menuOpen ? 'hidden' : ''
+    return () => {
       document.body.style.overflow = ''
     }
-    return () => { document.body.style.overflow = '' }
-  }, [mobileOpen])
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (!formatOpen) return
+    const close = () => setFormatOpen(false)
+    const onKey = (e) => {
+      if (e.key === 'Escape') setFormatOpen(false)
+    }
+    document.addEventListener('click', close)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('click', close)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [formatOpen])
 
   useEffect(() => {
     const scrollContainer = document.querySelector('.snap-y')
@@ -60,7 +100,7 @@ const NavBar = () => {
       let maxVisibleSection = null
       let maxVisibility = 0
 
-      NAV_ITEMS.forEach(item => {
+      NAV_ITEMS.forEach((item) => {
         const sectionId = item.href.substring(1)
         const element = document.getElementById(sectionId)
         if (element) {
@@ -98,17 +138,16 @@ const NavBar = () => {
     }
   }, [progress])
 
-  const handleDownload = async () => {
-    const cloudinaryUrls = {
-      PDF: "https://res.cloudinary.com/dpmflnpcd/image/upload/v1792766147/Priyanshu_Kumar_resume_akcf9l.pdf",
-      DOCX: "https://res.cloudinary.com/dpmflnpcd/raw/upload/v1792766160/Priyanshu_Kumar_resume_oeuqti.docx"
-    }
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
 
-    const selectedFormat = selected.value.toUpperCase()
-    const fileUrl = cloudinaryUrls[selectedFormat]
+  const handleDownload = async (format) => {
+    const selectedFormat = format.value.toUpperCase()
+    const fileUrl = RESUME_URLS[selectedFormat]
     if (!fileUrl) return
 
-    if (isPosthogConfigured) posthog.capture('resume_download_requested', { format: selectedFormat.toLowerCase() })
+    if (isPosthogConfigured) {
+      posthog.capture('resume_download_requested', { format: selectedFormat.toLowerCase() })
+    }
 
     try {
       const response = await fetch(fileUrl)
@@ -117,364 +156,227 @@ const NavBar = () => {
 
       const link = document.createElement('a')
       link.href = blobUrl
-      link.download = `Priyanshu_kumar_resume.${selected.value.toLowerCase()}`
+      link.download = `Priyanshu_kumar_resume.${format.value.toLowerCase()}`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
 
       window.URL.revokeObjectURL(blobUrl)
     } catch (error) {
-      console.error("Download failed:", error)
+      console.error('Download failed:', error)
       window.open(fileUrl, '_blank')
     }
   }
 
+  const showBrandName = activeSection !== 'home'
+
   return (
-    <>
-      <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: EASE }}
-        className={`fixed top-0 left-0 right-0 z-50 transform-gpu transition-[padding] duration-500 ease-out ${
-          scrolled ? 'py-2 sm:py-3' : 'py-4 sm:py-6'
-        }`}
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.6, ease: EASE }}
+      className={`nav nav--fixed nav--transparent${scrolled || menuOpen ? ' is-scrolled' : ''}`}
+      aria-label="Primary"
+    >
+      <motion.div
+        aria-hidden="true"
+        initial={false}
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: '-1px',
+          height: 'var(--border-width-accent)',
+          transformOrigin: 'left',
+          pointerEvents: 'none',
+          backgroundColor: 'var(--color-accent)',
+          scaleX: progressSmooth,
+          opacity: scrolled ? 1 : 0,
+          transition: 'opacity var(--duration-theme) var(--ease-standard)',
+        }}
+      />
+
+      <div
+        className="container nav__inner"
+        style={{ maxWidth: 'var(--container-width)', marginInline: 'auto', paddingInline: 'var(--container-padding)' }}
       >
-        <motion.div
-          aria-hidden="true"
-          initial={false}
-          animate={{ opacity: scrolled ? 1 : 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="absolute inset-0 pointer-events-none border-b border-violet-500/10 bg-[#09090f]/80 backdrop-blur-md shadow-2xl"
-        />
+        <a href="#home" className="nav__brand" onClick={() => setMenuOpen(false)}>
+          <motion.span
+            className="nav__brand-mark"
+            style={{
+              width: '1.75rem',
+              height: '1.75rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'transparent',
+              borderRadius: 'var(--border-radius-md)',
+              overflow: 'hidden',
+            }}
+            animate={{ rotate: showBrandName ? 360 : 0 }}
+            transition={{ type: 'spring', stiffness: 70, damping: 16 }}
+          >
+            <img src={navlogo} alt="Developer's logo" style={{ width: '100%', height: '100%' }} />
+          </motion.span>
 
-        <motion.div
-          aria-hidden="true"
-          className="absolute -bottom-px left-0 right-0 h-px origin-left pointer-events-none"
-          style={{
-            scaleX: progressSmooth,
-            background: 'linear-gradient(90deg, rgba(139,92,246,0), rgba(167,139,250,0.9), rgba(217,70,239,0.7))',
-            boxShadow: '0 0 8px rgba(167,139,250,0.6)',
-            opacity: scrolled ? 1 : 0,
-            transition: 'opacity 0.4s ease',
-          }}
-        />
+          <AnimatePresence initial={false}>
+            {showBrandName && (
+              <motion.span
+                key="brand-name"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: 'auto' }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{
+                  width: { duration: 0.45, ease: EASE },
+                  opacity: { duration: 0.25, ease: EASE },
+                }}
+                style={{ overflow: 'hidden', whiteSpace: 'nowrap', display: 'inline-block' }}
+              >
+                Priyanshu <span className="text-accent">codes.</span>
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </a>
 
-        <div className="relative max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2 md:grid md:grid-cols-[1fr_auto_1fr]">
+        <button
+          type="button"
+          className="nav__toggle"
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="primary-menu"
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          <span className="nav__toggle-bar" />
+        </button>
 
-          <div className="flex items-center cursor-pointer shrink-0 min-w-0 md:justify-self-start">
-            <motion.div
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center overflow-hidden bg-transparent shrink-0"
-              animate={{ rotate: activeSection !== 'home' ? 360 : 0 }}
-              transition={{ type: 'spring', stiffness: 70, damping: 16 }}
-            >
-              <img src={navlogo} alt="Developer's logo" className="w-full h-full" />
-            </motion.div>
-
-            <AnimatePresence initial={false}>
-              {activeSection !== 'home' && (
-                <motion.div
-                  key="brand-name"
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: 'auto' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  transition={{
-                    width: { duration: 0.5, ease: EASE },
-                    opacity: { duration: 0.3, ease: 'easeOut' },
-                  }}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  <motion.span
-                    initial={{ x: -16 }}
-                    animate={{ x: 0 }}
-                    exit={{ x: -16 }}
-                    transition={{ duration: 0.5, ease: EASE }}
-                    className="block pl-2 font-semibold text-[10px] sm:text-[11px] uppercase tracking-[0.2em] text-purple-100"
-                  >
-                    Priyanshu <span className="text-violet-500">codes.</span>
-                  </motion.span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="hidden md:flex items-center gap-0 sm:gap-2 md:gap-4 md:justify-self-center">
-            {NAV_ITEMS.map((item, i) => {
+        <div id="primary-menu" className={`nav__menu${menuOpen ? ' is-open' : ''}`}>
+          <ul className="nav__links" role="list">
+            {NAV_ITEMS.map((item) => {
               const sectionId = item.href.substring(1)
               const isActive = activeSection === sectionId
               return (
-                <motion.a
-                  key={item.name}
-                  href={item.href}
-                  className="relative px-1.5 xs:px-2 sm:px-3 py-2 group"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 + i * 0.07, duration: 0.5, ease: EASE }}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.96 }}
-                >
-                  <div className="flex items-center gap-1.5 relative z-10">
-                    <item.icon
-                      size={15}
-                      className={`transition-colors duration-300 ${
-                        isActive ? 'text-violet-400' : 'text-purple-200/50 group-hover:text-purple-100'
-                      }`}
-                    />
-                    <span className={`font-mono text-[9px] sm:text-[10px] uppercase tracking-wider transition-colors duration-300 hidden lg:block ${
-                      isActive ? 'text-violet-400' : 'text-purple-200/50 group-hover:text-purple-100'
-                    }`}>
-                      {item.name}
-                    </span>
-                  </div>
-
-                  {isActive && (
-                    <motion.div
-                      layoutId="nav-glow"
-                      className="absolute inset-0 bg-violet-500/5 rounded-lg border border-violet-500/20"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    >
-                      
-                    </motion.div>
-                  )}
-                </motion.a>
+                <li key={item.name}>
+                  <a
+                    href={item.href}
+                    className={`nav__link${isActive ? ' is-active' : ''}`}
+                    aria-current={isActive ? 'true' : undefined}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                </li>
               )
             })}
-          </div>
+          </ul>
 
-          <div className="flex items-center gap-3 md:justify-self-end">
-            <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full border
-             border-violet-500/30 bg-violet-500/10 font-mono text-[9px] sm:text-[10px]
-              text-purple-200 uppercase tracking-widest hover:bg-violet-500/20 transition-all 
-              duration-300 cursor-pointer"
-              onClick={handleDownload}>
-              <motion.button
-                className="flex items-center gap-1.5 font-mono"
-                whileTap={{ scale: 0.95 }}
+          <div className="cluster">
+            <button
+              type="button"
+              className="theme-toggle rounded-3xl"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              <svg
+                className="theme-toggle__icon--to-light"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
               >
-                <FileUser size={15} />
-                <span className="hidden md:inline">Resume</span>
-              </motion.button>
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+              </svg>
+              <svg
+                className="theme-toggle__icon--to-dark"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+              </svg>
+            </button>
 
-              <div className="relative">
-                <button
-                  onClick={(e) => { e.stopPropagation(); setOpen(o => !o) }}
-                  className="flex items-center gap-1.5 py-1.5 px-0.5 rounded-full font-mono text-[9px] sm:text-[10px] text-purple-200 uppercase tracking-widest transition-all duration-200"
-                >
-                  {selected.label}
-                  <svg
-                    width="10" height="10" viewBox="0 0 10 10" fill="none"
-                    style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
-                  >
-                    <path d="M2 3.5L5 6.5L8 3.5" stroke="rgba(139,92,246,0.8)" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </button>
-
-                <AnimatePresence>
-                  {open && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -6, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                      transition={{ duration: 0.15, ease: EASE }}
-                      className="absolute right-0 mt-2 rounded-xl overflow-hidden z-999"
-                      style={{
-                        border: '1px solid rgba(139,92,246,0.25)',
-                        background: 'rgba(15,10,30,0.95)',
-                        backdropFilter: 'blur(16px)',
-                        minWidth: '80px',
-                      }}
-                    >
-                      {options.map(opt => (
-                        <button
-                          key={opt.value}
-                          onClick={(e) => { e.stopPropagation(); setSelected(opt); setOpen(false) }}
-                          className="w-full text-left px-3 py-2 font-mono text-[10px] uppercase tracking-widest transition-colors duration-150"
-                          style={{
-                            color: selected.value === opt.value ? 'rgba(192,168,255,1)' : 'rgba(192,168,255,0.5)',
-                            background: selected.value === opt.value ? 'rgba(139,92,246,0.12)' : 'transparent',
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(139,92,246,0.08)'}
-                          onMouseLeave={e => e.currentTarget.style.background = selected.value === opt.value ? 'rgba(139,92,246,0.12)' : 'transparent'}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-
-            <motion.button
-              className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-violet-500/30 bg-violet-500/10 text-purple-200/70 hover:text-purple-100 hover:bg-violet-500/20 transition-all duration-200"
-              onClick={() => setMobileOpen(o => !o)}
-              whileTap={{ scale: 0.93 }}
-              aria-label="Toggle menu"
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                {mobileOpen ? (
-                  <motion.span
-                    key="close"
-                    initial={{ opacity: 0, rotate: -90 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: 90 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <X size={15} />
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="menu"
-                    initial={{ opacity: 0, rotate: 90 }}
-                    animate={{ opacity: 1, rotate: 0 }}
-                    exit={{ opacity: 0, rotate: -90 }}
-                    transition={{ duration: 0.18 }}
-                  >
-                    <Menu size={15} />
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          </div>
-
-        </div>
-      </motion.nav>
-
-      <AnimatePresence>
-        {mobileOpen && (
-          <>
-            <motion.div
-              className="fixed inset-0 z-40 md:hidden"
-              style={{ background: 'rgba(5,3,15,0.6)', backdropFilter: 'blur(4px)' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileOpen(false)}
-            />
-
-            <motion.div
-              className="fixed top-0 right-0 bottom-0 z-40 md:hidden w-72 flex flex-col"
-              style={{
-                background: 'rgba(9,9,15,0.97)',
-                borderLeft: '1px solid rgba(139,92,246,0.2)',
-                backdropFilter: 'blur(20px)',
-              }}
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ duration: 0.3, ease: EASE }}
-            >
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(rgba(140,60,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(140,60,255,0.03) 1px, transparent 1px)',
-                  backgroundSize: '40px 40px',
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className="btn btn--primary btn--sm rounded-3xl"
+                aria-haspopup="menu"
+                aria-expanded={formatOpen}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setFormatOpen((o) => !o)
                 }}
-              />
-              <div
-                className="absolute top-0 right-0 w-48 h-48 pointer-events-none"
-                style={{
-                  background: 'radial-gradient(circle, rgba(120,40,220,0.15) 0%, transparent 70%)',
-                  filter: 'blur(40px)',
-                }}
-              />
-
-              <div className="relative flex flex-col h-full px-6 pt-20 pb-8 gap-8">
-
-                <div className="flex flex-col gap-1">
-                  <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-violet-500/40 mb-3">
-                    Navigation
-                  </span>
-                  {NAV_ITEMS.map((item, i) => {
-                    const sectionId = item.href.substring(1)
-                    const isActive = activeSection === sectionId
-                    return (
-                      <motion.a
-                        key={item.name}
-                        href={item.href}
-                        className="flex items-center gap-4 py-3 group"
-                        style={{ borderBottom: '1px solid rgba(139,92,246,0.08)' }}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.05 + i * 0.06, duration: 0.35, ease: EASE }}
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        <div
-                          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200"
-                          style={{
-                            border: isActive ? '1px solid rgba(139,92,246,0.5)' : '1px solid rgba(139,92,246,0.15)',
-                            background: isActive ? 'rgba(139,92,246,0.15)' : 'rgba(139,92,246,0.05)',
-                          }}
-                        >
-                          <item.icon
-                            size={14}
-                            className={isActive ? 'text-violet-400' : 'text-purple-200/40 group-hover:text-purple-200/70'}
-                            style={{ transition: 'color 0.2s' }}
-                          />
-                        </div>
-                        <span
-                          className="font-mono text-[11px] uppercase tracking-widest transition-colors duration-200"
-                          style={{ color: isActive ? 'rgba(192,168,255,0.95)' : 'rgba(192,168,255,0.45)' }}
-                        >
-                          {item.name}
-                        </span>
-                        {isActive && (
-                          <div
-                            className="ml-auto w-1 h-4 rounded-full"
-                            style={{ background: 'linear-gradient(to bottom, rgba(139,92,246,0.9), rgba(217,70,239,0.6))' }}
-                          />
-                        )}
-                      </motion.a>
-                    )
-                  })}
-                </div>
-
-                <motion.div
-                  className="mt-auto flex flex-col gap-3"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
+              >
+                <FileUser />
+                Resume
+                <svg
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  aria-hidden="true"
+                  style={{
+                    width: '0.625rem',
+                    height: '0.625rem',
+                    transform: formatOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform var(--duration-fast) var(--ease-standard)',
+                  }}
                 >
-                  <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-violet-500/40">
-                    Resume
-                  </span>
+                  <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    {options.map(opt => (
-                      <button
-                        key={opt.value}
-                        onClick={() => setSelected(opt)}
-                        className="py-2.5 rounded-xl font-mono text-[10px] uppercase tracking-widest transition-all duration-200"
-                        style={{
-                          border: selected.value === opt.value ? '1px solid rgba(139,92,246,0.5)' : '1px solid rgba(139,92,246,0.15)',
-                          background: selected.value === opt.value ? 'rgba(139,92,246,0.15)' : 'rgba(139,92,246,0.05)',
-                          color: selected.value === opt.value ? 'rgba(192,168,255,0.95)' : 'rgba(192,168,255,0.4)',
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => { handleDownload(); setMobileOpen(false) }}
-                    className="flex items-center justify-center gap-2 py-3 rounded-xl font-mono text-[11px] uppercase tracking-widest transition-all duration-200 active:scale-95"
+              <AnimatePresence>
+                {formatOpen && (
+                  <motion.div
+                    role="menu"
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.15, ease: EASE }}
                     style={{
-                      background: 'linear-gradient(135deg, rgba(139,92,246,0.9), rgba(109,40,217,0.9))',
-                      border: '1px solid rgba(139,92,246,0.5)',
-                      color: '#f0e8ff',
+                      position: 'absolute',
+                      right: 0,
+                      top: 'calc(100% + var(--space-2))',
+                      minWidth: '9.5rem',
+                      padding: 'var(--space-1)',
+                      backgroundColor: 'var(--color-surface-elevated)',
+                      border: 'var(--border-width) solid var(--color-border-strong)',
+                      borderRadius: 'var(--border-radius-lg)',
+                      boxShadow: 'var(--shadow-md)',
+                      zIndex: 'var(--z-overlay)',
                     }}
                   >
-                    <FileUser size={14} />
-                    Download
-                  </button>
-                </motion.div>
-
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
+                    {FORMATS.map((format) => (
+                      <button
+                        key={format.value}
+                        type="button"
+                        role="menuitem"
+                        className="btn btn--ghost btn--sm btn--block"
+                        style={{ justifyContent: 'space-between' }}
+                        onClick={() => {
+                          handleDownload(format)
+                          setFormatOpen(false)
+                          setMenuOpen(false)
+                        }}
+                      >
+                        <span>{format.value}</span>
+                        <span className="meta">{format.label}</span>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.nav>
   )
 }
 
