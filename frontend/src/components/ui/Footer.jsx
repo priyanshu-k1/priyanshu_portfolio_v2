@@ -5,7 +5,6 @@ import { Mail, ArrowUp, MapPin, Phone } from "lucide-react";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram, FaWhatsapp } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-import navlogo from "../../assets/logo.png";
 import FooterTypedHeroText from "./FooterTypedHeroText";
 
 const EMAIL = "priyanshukumar0419@gmail.com";
@@ -45,7 +44,7 @@ const containerStyle = {
 
 const useToast = () => {
   const [toasts, setToasts] = useState([]);
-
+  
   const push = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -119,6 +118,7 @@ const Footer = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const { toasts, push, dismiss } = useToast();
+  const navlogo = "https://res.cloudinary.com/dpmflnpcd/image/upload/v1794924440/Fiery_Gold_M%C3%B6bius_Ribbon_Logo_hjbdqt.png";
 
   const handleCopyEmail = () => {
     navigator.clipboard
@@ -198,7 +198,7 @@ const Footer = () => {
               <img
                 src={navlogo}
                 alt="Developer's logo"
-                style={{ width: "2rem", height: "2rem", borderRadius: "var(--border-radius-md)" }}
+                style={{ width: "2.5rem", height: "2.5rem", borderRadius: "var(--border-radius-md)" }}
               />
               <FooterTypedHeroText />
             </div>

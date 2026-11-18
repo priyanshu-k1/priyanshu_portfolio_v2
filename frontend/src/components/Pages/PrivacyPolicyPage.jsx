@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, Mail } from "lucide-react";
-import bannerImage from "../../assets/Privacy policy.svg";
+import bannerImage from "../../assets/privacy-policy-animate.svg";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const POLICY_ENDPOINT = `${API_URL}/api/privacy-policy/get`;
@@ -13,8 +13,13 @@ const DEFAULT_HEADER = "Privacy Policy";
 const DEFAULT_SUMMARY =
   "This policy explains how Priyanshu Kumar's portfolio website handles information when you visit the site or contact him.";
 
-const focusRing =
-  "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet-400";
+const HEADING = "var(--font-heading)";
+const EASE = [0.16, 1, 0.3, 1];
+
+const tint = (color, percent) =>
+  `color-mix(in srgb, ${color} ${percent}%, transparent)`;
+
+const GRID_LINE = tint("var(--color-accent)", 6);
 
 const formatDate = (value) => {
   const date = new Date(value);
@@ -30,72 +35,92 @@ const formatDate = (value) => {
   };
 };
 
-/* ---------- Shared page frame (background, back link, footer) ---------- */
+const PageFrame = ({ children }) => {
+  useEffect(() => {
+    const root = document.documentElement;
+    if (root.getAttribute("data-theme")) return;
+    try {
+      const saved = localStorage.getItem("theme");
+      if (saved === "light" || saved === "dark") {
+        root.setAttribute("data-theme", saved);
+      }
+    } catch (error) {
+      void error;
+    }
+  }, []);
 
-const PageFrame = ({ children }) => (
-  <main className="relative min-h-screen overflow-hidden bg-[#09090f] text-purple-100">
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0"
+  return (
+    <main
+      className="relative min-h-screen overflow-hidden"
       style={{
-        backgroundImage:
-          "linear-gradient(rgba(140,60,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(140,60,255,0.03) 1px, transparent 1px)",
-        backgroundSize: "40px 40px",
+        backgroundColor: "var(--color-bg)",
+        color: "var(--color-text-primary)",
+        transition: "background-color var(--duration-theme) var(--ease-standard)",
       }}
-    />
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute -top-40 right-0 h-136 w-136 rounded-full"
-      style={{
-        background:
-          "radial-gradient(circle, rgba(115,100,255,0.16) 0%, transparent 70%)",
-        filter: "blur(60px)",
-      }}
-    />
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: `linear-gradient(${GRID_LINE} 1px, transparent 1px), linear-gradient(90deg, ${GRID_LINE} 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-40 right-0 h-136 w-136 rounded-full"
+        style={{
+          background: `radial-gradient(circle, ${tint("var(--color-accent)", 18)} 0%, transparent 70%)`,
+          filter: "blur(60px)",
+        }}
+      />
 
-    <div className="relative mx-auto max-w-6xl px-6 sm:px-10">
-      <header className="pt-10">
-        <Link
-          to="/"
-          className={`group inline-flex items-center gap-2 rounded-full border border-violet-500/25 bg-violet-500/5 px-4 py-2 text-sm text-violet-300 transition-colors hover:border-violet-400/50 hover:bg-violet-500/10 hover:text-violet-200 ${focusRing}`}
+      <div className="relative mx-auto max-w-6xl px-6 sm:px-10">
+        <header className="pt-10">
+          <Link to="/" className="group btn btn--secondary btn--sm">
+            <ArrowLeft
+              size={15}
+              className="transition-transform duration-300 group-hover:-translate-x-0.5"
+            />
+            Back to portfolio
+          </Link>
+        </header>
+
+        {children}
+
+        <footer
+          className="meta py-8 transition-colors duration-300"
+          style={{
+            borderTop: "var(--border-width) solid var(--color-border)",
+            color: "var(--color-text-muted)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--color-accent)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--color-text-muted)";
+          }}
         >
-          <ArrowLeft
-            size={15}
-            className="transition-transform duration-300 group-hover:-translate-x-0.5"
-          />
-          Back to portfolio
-        </Link>
-      </header>
-
-      {children}
-
-      <footer className="border-t border-violet-500/15 py-8 text-sm text-purple-100/50 hover:text-purple-500 transition-colors duration-300">
-        © {new Date().getFullYear()} Priyanshu Kumar
-      </footer>
-    </div>
-  </main>
-);
-
-/* ---------- Loading and error states ---------- */
+          © {new Date().getFullYear()} Priyanshu Kumar
+        </footer>
+      </div>
+    </main>
+  );
+};
 
 const LoadingState = () => (
-  <div
-    role="status"
-    aria-busy="true"
-    aria-live="polite"
-    className="animate-pulse py-14 lg:py-24"
-  >
+  <div role="status" aria-busy="true" aria-live="polite" className="py-14 lg:py-24">
     <span className="sr-only">Loading privacy policy…</span>
-    <div className="h-4 w-48 rounded bg-violet-500/10" />
-    <div className="mt-6 h-16 w-72 rounded bg-violet-500/10 sm:h-24 sm:w-96" />
-    <div className="mt-8 h-5 w-full max-w-prose rounded bg-violet-500/10" />
-    <div className="mt-3 h-5 w-2/3 max-w-prose rounded bg-violet-500/10" />
+    <div className="skeleton h-4 w-48" />
+    <div className="skeleton mt-6 h-16 w-72 sm:h-24 sm:w-96" />
+    <div className="skeleton mt-8 h-5 w-full max-w-prose" />
+    <div className="skeleton mt-3 h-5 w-2/3 max-w-prose" />
     <div className="mt-16 space-y-10">
       {[0, 1, 2].map((n) => (
         <div key={n} className="space-y-3">
-          <div className="h-6 w-56 rounded bg-violet-500/10" />
-          <div className="h-4 w-full max-w-2xl rounded bg-violet-500/10" />
-          <div className="h-4 w-5/6 max-w-2xl rounded bg-violet-500/10" />
+          <div className="skeleton h-6 w-56" />
+          <div className="skeleton h-4 w-full max-w-2xl" />
+          <div className="skeleton h-4 w-5/6 max-w-2xl" />
         </div>
       ))}
     </div>
@@ -104,32 +129,65 @@ const LoadingState = () => (
 
 const ErrorState = ({ message, onRetry }) => (
   <div role="alert" className="py-24 text-center">
-    <h1 className="text-3xl font-semibold text-[#f0e8ff]">
+    <h1
+      className="text-3xl"
+      style={{
+        fontFamily: HEADING,
+        fontWeight: "var(--weight-semibold)",
+        color: "var(--color-text-primary)",
+      }}
+    >
       We couldn't load the privacy policy
     </h1>
-    <p className="mx-auto mt-4 max-w-md leading-7 text-purple-100/70">
+    <p
+      className="mx-auto mt-4 max-w-md leading-7"
+      style={{ color: "var(--color-text-secondary)" }}
+    >
       {message}
     </p>
     <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-      <button
-        type="button"
-        onClick={onRetry}
-        className={`rounded-full bg-violet-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-violet-400 ${focusRing}`}
-      >
+      <button type="button" onClick={onRetry} className="btn btn--primary">
         Try again
       </button>
-      <a
-        href={`mailto:${DEFAULT_EMAIL}`}
-        className={`inline-flex items-center gap-2.5 rounded-full border border-violet-400/40 px-5 py-3 text-sm text-violet-200 transition-colors hover:border-violet-300 hover:bg-violet-500/10 ${focusRing}`}
-      >
-        <Mail size={16} />
+      <a href={`mailto:${DEFAULT_EMAIL}`} className="btn btn--secondary">
+        <Mail />
         Contact by email
       </a>
     </div>
   </div>
 );
 
-/* ---------- The policy itself ---------- */
+const TocLink = ({ section, index, isActive, onClick }) => {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <li>
+      <a
+        href={`#${section.id}`}
+        onClick={onClick}
+        aria-current={isActive ? "location" : undefined}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="-ml-px block border-l py-1.5 pl-4 text-sm leading-5 transition-colors duration-300"
+        style={{
+          borderColor: isActive ? "var(--color-accent)" : "transparent",
+          color:
+            isActive || hovered
+              ? "var(--color-text-primary)"
+              : "var(--color-text-muted)",
+        }}
+      >
+        <span
+          className="mr-2 tabular-nums"
+          style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent)" }}
+        >
+          {index + 1}.
+        </span>
+        {section.title}
+      </a>
+    </li>
+  );
+};
 
 const PolicyContent = ({ policy }) => {
   const reduceMotion = useReducedMotion();
@@ -185,10 +243,7 @@ const PolicyContent = ({ policy }) => {
     show: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: reduceMotion ? 0 : 0.7,
-        ease: [0.16, 1, 0.3, 1],
-      },
+      transition: { duration: reduceMotion ? 0 : 0.7, ease: EASE },
     },
   };
 
@@ -199,7 +254,7 @@ const PolicyContent = ({ policy }) => {
       scale: 1,
       transition: {
         duration: reduceMotion ? 0 : 0.9,
-        ease: [0.16, 1, 0.3, 1],
+        ease: EASE,
         delay: reduceMotion ? 0 : 0.25,
       },
     },
@@ -211,13 +266,20 @@ const PolicyContent = ({ policy }) => {
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid items-center gap-14 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:py-24"
+        className="grid items-center gap-14 pb-14 pt-6 lg:grid-cols-[1.05fr_0.95fr] lg:pb-24 lg:pt-8"
       >
         <div>
           {updated && (
-            <motion.p variants={item} className="text-sm text-violet-300">
+            <motion.p
+              variants={item}
+              className="meta"
+              style={{ color: "var(--color-accent)" }}
+            >
               Last updated{" "}
-              <time dateTime={updated.iso} className="text-purple-100/80">
+              <time
+                dateTime={updated.iso}
+                style={{ color: "var(--color-text-secondary)" }}
+              >
                 {updated.label}
               </time>
             </motion.p>
@@ -225,7 +287,12 @@ const PolicyContent = ({ policy }) => {
 
           <motion.h1
             variants={item}
-            className="mt-4 text-5xl font-black uppercase leading-[0.95] tracking-tight text-[#f0e8ff] sm:text-7xl"
+            className="mt-4 text-5xl uppercase leading-[0.95] tracking-tight sm:text-7xl"
+            style={{
+              fontFamily: HEADING,
+              fontWeight: "var(--weight-semibold)",
+              color: "var(--color-text-primary)",
+            }}
           >
             {headerWords.map((word, index) => (
               <span key={`${word}-${index}`}>
@@ -237,7 +304,8 @@ const PolicyContent = ({ policy }) => {
 
           <motion.p
             variants={item}
-            className="mt-8 max-w-prose text-lg leading-8 text-purple-100/70"
+            className="mt-8 max-w-prose text-lg leading-8"
+            style={{ color: "var(--color-text-secondary)" }}
           >
             {summary}
           </motion.p>
@@ -245,9 +313,9 @@ const PolicyContent = ({ policy }) => {
           <motion.a
             variants={item}
             href={`mailto:${email}`}
-            className={`mt-8 inline-flex items-center gap-2.5 rounded-full bg-violet-500 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-violet-900/40 transition-colors hover:bg-violet-400 ${focusRing}`}
+            className="btn btn--primary mt-8 rounded-3xl"
           >
-            <Mail size={16} />
+            <Mail />
             Email a privacy request
           </motion.a>
         </div>
@@ -255,34 +323,44 @@ const PolicyContent = ({ policy }) => {
         <motion.div variants={art} className="relative mx-auto w-full max-w-md">
           <div
             aria-hidden="true"
-            className="absolute -inset-6 rounded-[2.5rem] bg-violet-600/25 blur-3xl"
+            className="absolute -inset-10 rounded-full"
+            style={{
+              background: `radial-gradient(circle, ${tint("var(--color-accent)", 22)} 0%, transparent 70%)`,
+              filter: "blur(40px)",
+            }}
           />
-          <div
-            className="relative overflow-hidden rounded-3xl p-6 shadow-2xl shadow-violet-950/60 ring-1 ring-violet-300/40 sm:p-9"
-            style={{ background: "linear-gradient(145deg, #f7f4ff, #ddd6ff)" }}
-          >
-            <img
-              src={bannerImage}
-              alt="Illustration of a person reviewing a privacy policy"
-              width="500"
-              height="500"
-              className="mx-auto block h-auto w-full"
-            />
-          </div>
+          <img
+            src={bannerImage}
+            alt="Illustration of a person reviewing a privacy policy"
+            width="500"
+            height="500"
+            className="relative mx-auto block h-auto w-full"
+            style={{ filter: "drop-shadow(0 24px 40px rgb(0 0 0 / 0.35))" }}
+          />
         </motion.div>
       </motion.section>
 
       {highlights.length > 0 && (
-        <dl className="grid divide-y divide-violet-500/15 border-y border-violet-500/15 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <dl
+          className="grid border-y sm:grid-cols-3"
+          style={{ borderColor: "var(--color-border)" }}
+        >
           {highlights.map((highlight) => (
             <div
               key={highlight.label}
-              className="px-0 py-7 sm:px-8 sm:first:pl-0 sm:last:pr-0"
+              className="border-t px-0 py-7 first:border-t-0 sm:border-t-0 sm:border-l sm:px-8 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0"
+              style={{ borderColor: "var(--color-border)" }}
             >
-              <dt className="text-sm font-semibold text-violet-300">
+              <dt
+                className="meta"
+                style={{ color: "var(--color-accent)", textTransform: "uppercase" }}
+              >
                 {highlight.label}
               </dt>
-              <dd className="mt-2 leading-7 text-purple-100/70">
+              <dd
+                className="mt-2 leading-7"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
                 {highlight.text}
               </dd>
             </div>
@@ -293,32 +371,25 @@ const PolicyContent = ({ policy }) => {
       <div className="grid gap-12 py-16 lg:grid-cols-[14rem_1fr] lg:gap-20 lg:py-24">
         <aside className="hidden lg:block">
           <nav aria-label="On this page" className="sticky top-12">
-            <p className="text-sm font-semibold text-purple-100/50">
+            <p
+              className="meta"
+              style={{ color: "var(--color-text-muted)", textTransform: "uppercase" }}
+            >
               On this page
             </p>
-            <ol className="mt-5 space-y-1 border-l border-violet-500/15">
-              {sections.map((section, index) => {
-                const isActive = activeId === section.id;
-                return (
-                  <li key={section.id}>
-                    <a
-                      href={`#${section.id}`}
-                      onClick={(event) => goToSection(event, section.id)}
-                      aria-current={isActive ? "location" : undefined}
-                      className={`-ml-px block border-l py-1.5 pl-4 text-sm leading-5 transition-colors duration-300 ${focusRing} ${
-                        isActive
-                          ? "border-violet-400 text-violet-200"
-                          : "border-transparent text-purple-100/50 hover:text-purple-100"
-                      }`}
-                    >
-                      <span className="mr-2 tabular-nums text-violet-400/70">
-                        {index + 1}.
-                      </span>
-                      {section.title}
-                    </a>
-                  </li>
-                );
-              })}
+            <ol
+              className="mt-5 space-y-1 border-l"
+              style={{ borderColor: "var(--color-border)" }}
+            >
+              {sections.map((section, index) => (
+                <TocLink
+                  key={section.id}
+                  section={section}
+                  index={index}
+                  isActive={activeId === section.id}
+                  onClick={(event) => goToSection(event, section.id)}
+                />
+              ))}
             </ol>
           </nav>
         </aside>
@@ -328,10 +399,21 @@ const PolicyContent = ({ policy }) => {
             <section
               key={section.id}
               id={section.id}
-              className="scroll-mt-12 border-t border-violet-500/15 py-10 first:border-t-0 first:pt-0"
+              className="scroll-mt-12 border-t py-10 first:border-t-0 first:pt-0"
+              style={{ borderColor: "var(--color-border)" }}
             >
-              <h2 className="flex items-baseline gap-4 text-2xl font-semibold tracking-tight text-[#f0e8ff]">
-                <span className="w-6 shrink-0 text-base tabular-nums text-violet-400">
+              <h2
+                className="flex items-baseline gap-4 text-2xl tracking-tight"
+                style={{
+                  fontFamily: HEADING,
+                  fontWeight: "var(--weight-medium)",
+                  color: "var(--color-text-primary)",
+                }}
+              >
+                <span
+                  className="w-6 shrink-0 text-base tabular-nums"
+                  style={{ fontFamily: "var(--font-mono)", color: "var(--color-accent)" }}
+                >
                   {index + 1}.
                 </span>
                 {section.title}
@@ -340,7 +422,8 @@ const PolicyContent = ({ policy }) => {
                 {section.paragraphs.map((paragraph, pIndex) => (
                   <p
                     key={`${section.id}-${pIndex}`}
-                    className="leading-8 text-purple-100/70"
+                    className="leading-8"
+                    style={{ color: "var(--color-text-secondary)" }}
                   >
                     {paragraph}
                   </p>
@@ -349,19 +432,38 @@ const PolicyContent = ({ policy }) => {
             </section>
           ))}
 
-          <div className="mt-6 rounded-3xl border border-violet-500/25 bg-violet-500/5 p-8 sm:p-10">
-            <h2 className="text-xl font-semibold text-[#f0e8ff]">
+          <div
+            className="mt-6 p-8 sm:p-10"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              border: "var(--border-width) solid var(--color-border-strong)",
+              borderTop: "var(--border-width-accent) solid var(--color-accent)",
+              borderRadius: "var(--border-radius-lg)",
+            }}
+          >
+            <h2
+              className="text-xl"
+              style={{
+                fontFamily: HEADING,
+                fontWeight: "var(--weight-medium)",
+                color: "var(--color-text-primary)",
+              }}
+            >
               Questions or requests?
             </h2>
-            <p className="mt-3 leading-7 text-purple-100/70">
+            <p
+              className="mt-3 leading-7"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
               Write to Priyanshu to ask what is stored, correct it, or have it
               deleted.
             </p>
             <a
               href={`mailto:${email}`}
-              className={`mt-6 inline-flex items-center gap-2.5 break-all rounded-full border border-violet-400/40 px-5 py-2.5 text-sm text-violet-200 transition-colors hover:border-violet-300 hover:bg-violet-500/10 ${focusRing}`}
+              className="btn btn--secondary mt-6 break-all rounded-l"
+              style={{ whiteSpace: "normal" }}
             >
-              <Mail size={16} className="shrink-0" />
+              <Mail className="shrink-0" />
               {email}
             </a>
           </div>
@@ -371,11 +473,9 @@ const PolicyContent = ({ policy }) => {
   );
 };
 
-/* ---------- Page: fetches data and picks the right state ---------- */
-
 const PrivacyPolicyPage = () => {
   const [policy, setPolicy] = useState(null);
-  const [status, setStatus] = useState("loading"); // loading | success | error
+  const [status, setStatus] = useState("loading");
   const [errorMessage, setErrorMessage] = useState("");
 
   const loadPolicy = useCallback(async (signal) => {
@@ -415,10 +515,7 @@ const PrivacyPolicyPage = () => {
     <PageFrame>
       {status === "loading" && <LoadingState />}
       {status === "error" && (
-        <ErrorState
-          message={errorMessage}
-          onRetry={() => loadPolicy()}
-        />
+        <ErrorState message={errorMessage} onRetry={() => loadPolicy()} />
       )}
       {status === "success" && <PolicyContent policy={policy} />}
     </PageFrame>

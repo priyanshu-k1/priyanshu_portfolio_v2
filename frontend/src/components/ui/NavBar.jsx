@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react'
 import { FileUser } from 'lucide-react'
-import navlogo from '../../assets/logo.png'
+// import navlogo from '../../assets/logo.png'
 import posthog, { isPosthogConfigured } from '../../lib/posthog.js'
 
 const NAV_ITEMS = [
@@ -204,8 +204,8 @@ const NavBar = () => {
           <motion.span
             className="nav__brand-mark"
             style={{
-              width: '1.75rem',
-              height: '1.75rem',
+              width: '2.5rem',
+              height: '2.5rem',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -216,7 +216,7 @@ const NavBar = () => {
             animate={{ rotate: showBrandName ? 360 : 0 }}
             transition={{ type: 'spring', stiffness: 70, damping: 16 }}
           >
-            <img src={navlogo} alt="Developer's logo" style={{ width: '100%', height: '100%' }} />
+            <img src={"https://res.cloudinary.com/dpmflnpcd/image/upload/v1794924440/Fiery_Gold_M%C3%B6bius_Ribbon_Logo_hjbdqt.png"} alt="Developer's logo" style={{ width: '100%', height: '100%' }} />
           </motion.span>
 
           <AnimatePresence initial={false}>
