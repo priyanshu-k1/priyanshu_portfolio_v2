@@ -2,13 +2,13 @@
 import { motion, useInView } from "motion/react"
 import { useEffect, useRef, useState } from "react"
 
+const mix = (token, percent) =>
+  `color-mix(in srgb, var(--color-${token}) ${percent}%, transparent)`
+
 const CATEGORIES = [
   {
     label: "Mobile",
     index: "01",
-    color: "from-violet-500 to-purple-600",
-    borderColor: "rgba(139,92,246,0.35)",
-    glowColor: "rgba(139,92,246,0.12)",
     skills: [
       { name: "Kotlin", level: 90 },
       { name: "Dart / Flutter", level: 85 },
@@ -17,9 +17,6 @@ const CATEGORIES = [
   {
     label: "AI & ML",
     index: "02",
-    color: "from-fuchsia-500 to-violet-500",
-    borderColor: "rgba(217,70,239,0.35)",
-    glowColor: "rgba(217,70,239,0.12)",
     skills: [
       { name: "Python", level: 80 },
       { name: "TensorFlow", level: 65 },
@@ -30,9 +27,6 @@ const CATEGORIES = [
   {
     label: "Full-Stack",
     index: "03",
-    color: "from-purple-400 to-indigo-500",
-    borderColor: "rgba(99,102,241,0.35)",
-    glowColor: "rgba(99,102,241,0.12)",
     skills: [
       { name: "React", level: 75 },
       { name: "Express.js", level: 70 },
@@ -44,9 +38,6 @@ const CATEGORIES = [
   {
     label: "Tools",
     index: "04",
-    color: "from-violet-300 to-purple-500",
-    borderColor: "rgba(167,139,250,0.3)",
-    glowColor: "rgba(167,139,250,0.1)",
     skills: [
       { name: "Git & GitHub", level: 90 },
       { name: "REST APIs", level: 88 },
@@ -75,6 +66,14 @@ const TECHS = [
   { _id: "p18", skills_name: "Github",         skill_icon: { icon_url: "devicon-github-original",              is_monochrome: true  } },
 ]
 
+const accentText = { color: "var(--color-accent)" }
+
+const headerRule = {
+  height: 1,
+  border: 0,
+  background: `linear-gradient(90deg, ${mix("accent", 55)} 0%, ${mix("accent", 10)} 60%, transparent 100%)`,
+}
+
 const CategoryCard = ({ cat, cardIndex }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "-80px" })
@@ -82,49 +81,35 @@ const CategoryCard = ({ cat, cardIndex }) => {
   return (
     <motion.div
       ref={ref}
-      className="relative flex flex-col gap-4 p-2 rounded-2xl"
-      style={{
-        border: `1px solid ${cat.borderColor}`,
-        background: `radial-gradient(ellipse at top left, ${cat.glowColor} 0%, rgba(9,9,15,0) 70%), rgba(255,255,255,0.02)`,
-      }}
+      className="card card--interactive rounded-3xl
+      transition-transform duration-300 ease-standard hover:-translate-y-1"
+      style={{ position: "relative", borderRadius: "1.5rem" }}
       initial={{ opacity: 0, y: 32 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: cardIndex * 0.1 }}
-      whileHover={{
-        borderColor: cat.borderColor.replace("0.35", "0.6").replace("0.3", "0.55"),
-        transition: { duration: 0.2 },
-      }}
     >
       <div className="flex items-center justify-between">
         <span
-          className="font-black uppercase tracking-tight"
-          style={{ fontSize: "clamp(16px,1.4vw,22px)", fontFamily: "sans-serif" }}
+          className="card__title"
+          style={{
+            fontSize: "clamp(16px,1.4vw,22px)",
+            fontWeight: "var(--weight-semibold)",
+            textTransform: "uppercase",
+            color: "var(--color-text-primary)",
+          }}
         >
-          <span className={`bg-linear-to-r ${cat.color} bg-clip-text text-transparent`}>
-            {cat.label}
-          </span>
+          {cat.label}
         </span>
-        <span className="font-mono text-[10px] tracking-[0.25em] text-violet-500/30">
+        <span className="meta" style={{ color: "var(--color-text-muted)" }}>
           {cat.index}
         </span>
       </div>
 
-      <div
-        className="w-full h-px"
-        style={{ background: `linear-gradient(90deg, ${cat.borderColor} 0%, transparent 100%)` }}
-      />
+      <div className="divider" />
 
-      <div className="flex flex-wrap gap-1.5">
+      <div className="badge-list -mb-3">
         {cat.skills.map(skill => (
-          <span
-            key={skill.name}
-            className="font-mono text-[9px] tracking-wide uppercase px-2 py-1 rounded-full"
-            style={{
-              border: `1px solid ${cat.borderColor}`,
-              background: cat.glowColor,
-              color: "rgba(192,168,255,0.75)",
-            }}
-          >
+          <span key={skill.name} className="tag rounded-2x">
             {skill.name}
           </span>
         ))}
@@ -136,35 +121,33 @@ const CategoryCard = ({ cat, cardIndex }) => {
 const TechCard = ({ tech, index }) => {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: "-60px" })
+  const isMono = tech.skill_icon?.is_monochrome
 
   return (
     <motion.div
       ref={ref}
-      className="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl cursor-default"
+      className="card card--compact card--flat card--interactive rounded-3xl"
       style={{
-        border: "1px solid rgba(139,92,246,0.18)",
-        background: "rgba(255,255,255,0.02)",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "var(--space-3)",
+        borderRadius: "1.5rem",
+        cursor: "default",
       }}
       initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: index * 0.045 }}
-      whileHover={{
-        borderColor: "rgba(167,139,250,0.45)",
-        background: "rgba(139,92,246,0.07)",
-        y: -4,
-        transition: { duration: 0.2 },
-      }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
     >
       <i
         className={tech.skill_icon?.icon_url || "ph ph-empty"}
         style={{
           fontSize: 36,
-          filter: tech.skill_icon?.is_monochrome
-            ? "brightness(0) invert(1) opacity(0.5)"
-            : "saturate(0.75) brightness(1.05)",
+          color: isMono ? "var(--color-text-secondary)" : undefined,
+          filter: isMono ? "none" : "saturate(0.75) brightness(1.05)",
         }}
       />
-      <span className="font-mono text-[10px] tracking-wide uppercase text-purple-200/55">
+      <span className="meta" style={{ textTransform: "uppercase", textAlign: "center" }}>
         {tech.skills_name}
       </span>
     </motion.div>
@@ -210,14 +193,20 @@ const SkillsPage = () => {
 
   return (
     <section
-      className="relative min-h-screen bg-[#09090f] overflow-hidden"
-      style={{ padding: "clamp(80px,10vw,140px) clamp(24px,6vw,80px) 80px" }}
+      className="relative min-h-screen overflow-hidden"
+      style={{
+        backgroundColor: "var(--color-bg)",
+        color: "var(--color-text-primary)",
+        paddingBlock: "clamp(80px,10vw,140px) 80px",
+        paddingInline: 0,
+        transition:
+          "background-color var(--duration-theme) var(--ease-standard), color var(--duration-theme) var(--ease-standard)",
+      }}
     >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(140,60,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(140,60,255,0.04) 1px, transparent 1px)",
+          backgroundImage: `linear-gradient(${mix("accent", 7)} 1px, transparent 1px), linear-gradient(90deg, ${mix("accent", 7)} 1px, transparent 1px)`,
           backgroundSize: "60px 60px",
         }}
       />
@@ -225,142 +214,166 @@ const SkillsPage = () => {
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-150 h-75 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse, rgba(120,40,220,0.15) 0%, transparent 70%)",
+          background: `radial-gradient(ellipse, ${mix("accent", 18)} 0%, transparent 70%)`,
           filter: "blur(60px)",
         }}
       />
 
       <motion.div
-        className="absolute top-6 right-6 w-20 h-20 border-t border-r border-violet-500/20 pointer-events-none"
+        className="absolute top-6 right-6 w-20 h-20 pointer-events-none"
+        style={{
+          borderTop: `1px solid ${mix("accent", 35)}`,
+          borderRight: `1px solid ${mix("accent", 35)}`,
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
       />
       <motion.div
-        className="absolute bottom-6 left-6 w-14 h-14 border-b border-l border-violet-500/15 pointer-events-none"
+        className="absolute bottom-6 left-6 w-14 h-14 pointer-events-none"
+        style={{
+          borderBottom: `1px solid ${mix("accent-secondary", 40)}`,
+          borderLeft: `1px solid ${mix("accent-secondary", 40)}`,
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
       />
 
       <div
-        className="absolute top-1/2 right-[4vw] -translate-y-1/2 select-none pointer-events-none font-black text-violet-400/8 leading-none"
-        style={{ fontSize: "clamp(100px,16vw,200px)", fontFamily: "sans-serif" }}
+        className="absolute top-1/2 right-[4vw] -translate-y-1/2 select-none pointer-events-none leading-none"
+        style={{
+          fontSize: "clamp(100px,16vw,200px)",
+          fontFamily: "var(--font-heading)",
+          fontWeight: "var(--weight-semibold)",
+          color: mix("text-primary", 5),
+        }}
       >
         Let's build!
       </div>
 
-      <div ref={headerRef} className="flex flex-col gap-6 mb-16 max-w-2xl">
-        <motion.p
-          className="flex items-center gap-2.5 font-mono uppercase tracking-[0.35em] text-violet-400"
-          style={{ fontSize: "clamp(9px,1.1vw,11px)" }}
-          initial={{ opacity: 0, y: 14 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.1 }}
-        >
-          <span className="block w-7 h-px bg-violet-400" />
-          Capabilities
-        </motion.p>
-
-        <motion.h2
-          className="font-black uppercase leading-[0.92] tracking-tight text-[#f0e8ff]"
-          style={{ fontSize: "clamp(52px,9vw,120px)", fontFamily: "sans-serif" }}
-          initial={{ opacity: 0, x: -24 }}
-          animate={headerInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        >
-          SKILL
-          <br />
-          <span className="bg-linear-to-br from-purple-300 via-violet-500 to-purple-400 bg-clip-text text-transparent">
-            STACK
-          </span>
-        </motion.h2>
-
-        <motion.div
-          className="w-full h-px"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(140,60,255,0.55) 0%, rgba(140,60,255,0.1) 60%, transparent 100%)",
-          }}
-          initial={{ opacity: 0 }}
-          animate={headerInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.5 }}
-        />
-
-        <motion.p
-          className="font-light leading-relaxed text-purple-200/60"
-          style={{ fontSize: "clamp(14px,1.5vw,15px)" }}
-          initial={{ opacity: 0, y: 12 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.55 }}
-        >
-          Technologies I build with — from native Android to AI models and modern web stacks.
-        </motion.p>
-      </div>
-
       <div
-        className="grid gap-5"
+        className="container"
         style={{
-          gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 1fr))",
+          position: "relative",
+          zIndex: 1,
+          width: "100%",
+          maxWidth: 1280,
+          marginInline: "auto",
+          paddingInline: "clamp(20px,5vw,48px)",
         }}
       >
-        {CATEGORIES.map((cat, i) => (
-          <CategoryCard key={cat.label} cat={cat} cardIndex={i} />
-        ))}
-      </div>
-
-      <div ref={techHeaderRef} className="flex flex-col gap-4 mt-15 mb-10 max-w-2xl">
-        <motion.p
-          className="flex items-center gap-2.5 font-mono uppercase tracking-[0.35em] text-violet-400"
-          style={{ fontSize: "clamp(9px,1.1vw,11px)" }}
-          initial={{ opacity: 0, y: 14 }}
-          animate={techHeaderInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.1 }}
-        >
-          <span className="block w-7 h-px bg-violet-400" />
-          Technologies
-        </motion.p>
-
-        <motion.h3
-          className="font-black uppercase leading-[0.92] tracking-tight text-[#f0e8ff]"
-          style={{ fontSize: "clamp(36px,6vw,72px)", fontFamily: "sans-serif" }}
-          initial={{ opacity: 0, x: -24 }}
-          animate={techHeaderInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-        >
-          TECH
-          <span className="bg-linear-to-br from-purple-300 via-violet-500 to-purple-400 bg-clip-text text-transparent">
-            {" "}STACK
-          </span>
-        </motion.h3>
-
-        <motion.div
-          className="w-full h-px"
-          style={{
-            background:
-              "linear-gradient(90deg, rgba(140,60,255,0.55) 0%, rgba(140,60,255,0.1) 60%, transparent 100%)",
-          }}
-          initial={{ opacity: 0 }}
-          animate={techHeaderInView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.4 }}
-        />
-
-        {isFetching && (
+        <div ref={headerRef} className="flex flex-col gap-6 mb-16 max-w-2xl">
           <motion.p
-            className="font-mono text-[10px] tracking-[0.2em] uppercase text-violet-400/40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="eyebrow"
+            style={{ fontSize: "clamp(10px,1.1vw,12px)", textTransform: "uppercase", letterSpacing: "0.3em" }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.1 }}
           >
-            Syncing live data...
+            Capabilities
           </motion.p>
-        )}
-      </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {skillData.map((tech, i) => (
-          <TechCard tech={tech} index={i} key={tech._id || i} />
-        ))}
+          <motion.h2
+            className="display"
+            style={{
+              fontSize: "clamp(52px,9vw,120px)",
+              textTransform: "uppercase",
+              lineHeight: 0.92,
+              fontWeight: "var(--weight-semibold)",
+            }}
+            initial={{ opacity: 0, x: -24 }}
+            animate={headerInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          >
+            SKILL
+            <br />
+            <span style={accentText}>STACK</span>
+          </motion.h2>
+
+          <motion.div
+            className="divider"
+            style={headerRule}
+            initial={{ opacity: 0 }}
+            animate={headerInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.5 }}
+          />
+
+          <motion.p
+            className="lead"
+            style={{ fontSize: "clamp(14px,1.5vw,16px)" }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.55 }}
+          >
+            Technologies I build with — from native Android to AI models and modern web stacks.
+          </motion.p>
+        </div>
+
+        <div
+          className="grid"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 1fr))",
+            gap: "var(--space-5)",
+          }}
+        >
+          {CATEGORIES.map((cat, i) => (
+            <CategoryCard key={cat.label} cat={cat} cardIndex={i} />
+          ))}
+        </div>
+
+        <div ref={techHeaderRef} className="flex flex-col gap-4 mt-15 mb-10 max-w-2xl">
+          <motion.p
+            className="eyebrow"
+            style={{ fontSize: "clamp(10px,1.1vw,12px)", textTransform: "uppercase", letterSpacing: "0.3em" }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={techHeaderInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            Technologies
+          </motion.p>
+
+          <motion.h3
+            className="display"
+            style={{
+              fontSize: "clamp(36px,6vw,72px)",
+              textTransform: "uppercase",
+              lineHeight: 0.92,
+              fontWeight: "var(--weight-semibold)",
+            }}
+            initial={{ opacity: 0, x: -24 }}
+            animate={techHeaderInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          >
+            TECH <span style={accentText}>STACK</span>
+          </motion.h3>
+
+          <motion.div
+            className="divider"
+            style={headerRule}
+            initial={{ opacity: 0 }}
+            animate={techHeaderInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.4 }}
+          />
+
+          {isFetching && (
+            <motion.p
+              className="meta"
+              style={{ textTransform: "uppercase", letterSpacing: "0.2em", color: "var(--color-text-muted)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0.3, 1, 0.3] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            >
+              Syncing live data...
+            </motion.p>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {skillData.map((tech, i) => (
+            <TechCard tech={tech} index={i} key={tech._id || i} />
+          ))}
+        </div>
       </div>
     </section>
   )

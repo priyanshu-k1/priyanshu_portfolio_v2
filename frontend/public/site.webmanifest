@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Priyanshu Kumar Portfolio",
+  "short_name": "Priyanshu",
+  "description": "Personal portfolio of Priyanshu Kumar",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#171717",
+  "theme_color": "#171717",
+  "icons": [
+    {
+      "src": "public/favicon.png",
+      "sizes": "",
+      "type": "image/png",
+      "purpose": "1024x1024"
+    }
+  ]
+}
