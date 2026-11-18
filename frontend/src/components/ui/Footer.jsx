@@ -195,11 +195,13 @@ const Footer = () => {
         >
           <div className="footer__brand">
             <div className="cluster">
-              <img
-                src={navlogo}
-                alt="Developer's logo"
-                style={{ width: "2.5rem", height: "2.5rem", borderRadius: "var(--border-radius-md)" }}
-              />
+              <a href="#home" aria-label="Go to home">
+                <img
+                  src={navlogo}
+                  alt="Developer's logo"
+                  style={{ width: "2.5rem", height: "2.5rem", borderRadius: "var(--border-radius-md)" }}
+                />
+              </a>
               <FooterTypedHeroText />
             </div>
             <p className="text-sm text-muted">
