@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { motion, useInView, AnimatePresence } from "motion/react"
-import { useRef, useState, useCallback, useEffect } from "react"
+import { useRef, useState, useCallback } from "react"
 import posthog, { isPosthogConfigured } from "../../lib/posthog.js"
 import contactFormLogger from "../../lib/posthog-logger.js"
 

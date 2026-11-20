@@ -5,6 +5,8 @@ import projectData from "./project.json"
 import { Zap } from "lucide-react"
 import posthog, { isPosthogConfigured } from "../../lib/posthog.js"
 
+import TiltCard from "./TiltCard.jsx"
+
 const mix = (token, percent) =>
   `color-mix(in srgb, var(--color-${token}) ${percent}%, transparent)`
 
@@ -592,7 +594,9 @@ const ProjectPage = () => {
 
           <div className="flex flex-col gap-5 mb-24">
             {featuredProjects.map(project => (
-              <FeaturedCard key={project._id} project={project} onOpen={setActiveModal} />
+              <TiltCard key={project._id} className="w-full" radius="1.5rem">
+                <FeaturedCard project={project} onOpen={setActiveModal} />
+              </TiltCard>
             ))}
             {majorProjects.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

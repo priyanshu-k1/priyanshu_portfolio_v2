@@ -4,6 +4,7 @@ import { motion, useInView, AnimatePresence } from "motion/react";
 import { Mail, ArrowUp, MapPin, Phone } from "lucide-react";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram, FaWhatsapp } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import { SiLeetcode } from "react-icons/si";
 
 import FooterTypedHeroText from "./FooterTypedHeroText";
 
@@ -27,7 +28,8 @@ const SOCIAL_LINKS = [
     href: "https://www.linkedin.com/in/priyanshu-kumar-97898424a/",
     label: "LinkedIn",
   },
-  { icon: FaXTwitter, href: "https://x.com/KPriyanshu011", label: "Twitter" },
+  { icon: SiLeetcode,
+     href: "https://leetcode.com/u/priyanshu-k1/", label: "LeetCode" },
   {
     icon: FaInstagram,
     href: "https://www.instagram.com/why.not.priyanshuuuu/",
